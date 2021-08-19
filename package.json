@@ -1,0 +1,22 @@
+{
+  "name": "shellies-ng",
+  "version": "1.0.0",
+  "description": "Handles communication with the next generation of Shelly devices",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexryd/node-shellies-ng.git"
+  },
+  "keywords": [
+    "shelly"
+  ],
+  "author": "Alexander Rydén",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/alexryd/node-shellies-ng/issues"
+  },
+  "homepage": "https://github.com/alexryd/node-shellies-ng#readme"
+}
