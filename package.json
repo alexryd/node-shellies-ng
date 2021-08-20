@@ -2,11 +2,15 @@
   "name": "shellies-ng",
   "version": "1.0.0",
   "description": "Handles communication with the next generation of Shelly devices",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/**/*"],
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "lint": "eslint src/**.ts --max-warnings=0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint"
   },
   "repository": {
     "type": "git",
