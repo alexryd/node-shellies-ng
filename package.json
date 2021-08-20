@@ -4,11 +4,13 @@
   "description": "Handles communication with the next generation of Shelly devices",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "lint": "eslint src/**.ts --max-warnings=0",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"
   },
@@ -26,10 +28,13 @@
   },
   "homepage": "https://github.com/alexryd/node-shellies-ng#readme",
   "devDependencies": {
+    "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
+    "jest": "^27.0.6",
     "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
     "typescript": "^4.3.5"
   }
 }
