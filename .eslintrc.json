@@ -36,13 +36,5 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/semi": ["warn"],
     "@typescript-eslint/member-delimiter-style": ["warn"]
-  },
-  "overrides": [
-    {
-      "files": ["*.spec.ts"],
-      "rules": {
-        "prefer-arrow-callback": "off"
-      }
-    }
-  ]
+  }
 }
