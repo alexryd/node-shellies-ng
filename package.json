@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "rimraf ./dist && tsc",
-    "lint": "eslint src/**.ts --max-warnings=0",
+    "lint": "eslint ./src --ext .ts,.js --max-warnings=0",
     "test": "jest",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"
