@@ -18,7 +18,7 @@ class TestComponent extends Component {
     characteristic2: 0,
   };
 
-  getCharacteristics(): Set<string> {
+  getCharacteristics(): Set<string> | undefined {
     return this.characteristics;
   }
 }
@@ -34,10 +34,10 @@ describe('Component', () => {
     test('has the defined characteristics', () => {
       const cs = component.getCharacteristics();
 
-      expect(cs.size).toBe(3);
-      expect(cs.has('characteristic1')).toBe(true);
-      expect(cs.has('characteristic2')).toBe(true);
-      expect(cs.has('characteristic3')).toBe(true);
+      expect(cs!.size).toBe(3);
+      expect(cs!.has('characteristic1')).toBe(true);
+      expect(cs!.has('characteristic2')).toBe(true);
+      expect(cs!.has('characteristic3')).toBe(true);
     });
   });
 

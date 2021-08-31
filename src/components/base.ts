@@ -32,7 +32,7 @@ export abstract class Component extends EventEmitter {
   /**
    * A list of all characteristics.
    */
-  protected get characteristics(): Set<CharacteristicName> {
+  protected get characteristics(): Set<CharacteristicName> | undefined {
     return this['_characteristics'];
   }
 
@@ -42,10 +42,14 @@ export abstract class Component extends EventEmitter {
    * updated.
    * @param data - A data object that contains characteristics and their values.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  update(data: Record<string, any>) {
+  update(data: Record<string, unknown>) {
     const cs = this.characteristics;
     const changed = new Set<CharacteristicName>();
+
+    if (!cs) {
+      // abort if we don't have any characteristics
+      return;
+    }
 
     // loop through each of our characteristics
     for (const c of cs) {
