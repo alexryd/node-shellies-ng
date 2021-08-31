@@ -1,9 +1,19 @@
 import { characteristic, Component } from './base';
+import { RpcHandler } from '../rpc';
 
 type CompoundCharacteristic = {
   characteristic1: string | null;
   characteristic2: number;
 };
+
+interface Response {
+  success: boolean;
+}
+
+class TestRpcHandler implements RpcHandler {
+  request = jest.fn().mockResolvedValue({ success: true });
+  destroy = jest.fn().mockImplementation(() => Promise.resolve());
+}
 
 class TestComponent extends Component {
   @characteristic()
@@ -18,8 +28,16 @@ class TestComponent extends Component {
     characteristic2: 0,
   };
 
+  constructor() {
+    super('Test', new TestRpcHandler());
+  }
+
   getCharacteristics(): Set<string> | undefined {
     return this.characteristics;
+  }
+
+  makeRequest(id: number): PromiseLike<Response> {
+    return this.rpc<Response>('Request', { id });
   }
 }
 
@@ -119,6 +137,14 @@ describe('Component', () => {
       expect(component.characteristic1).toBe(3);
       expect(component.characteristic2).toBe(true);
       expect(listener).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('.rpc()', () => {
+    test('makes a request', () => {
+      expect(component.makeRequest(1)).resolves.toStrictEqual({ success: true });
+
+      expect(component.rpcHandler.request).toHaveBeenCalledWith('Test.Request', { id: 1 });
     });
   });
 });
