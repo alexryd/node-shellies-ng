@@ -24,6 +24,26 @@ export interface SwitchAttributes {
   temperature: SwitchTemperatureAttributes;
 }
 
+export interface SwitchConfig {
+  id: number;
+  name: string | null;
+  in_mode: 'momentary' | 'follow' | 'flip' | 'detached';
+  initial_state: 'off' | 'on' | 'restore_last' | 'match_input';
+  auto_on: boolean;
+  auto_on_delay: number;
+  auto_off: boolean;
+  auto_off_delay: number;
+  power_limit: number;
+}
+
+export interface SwitchConfigResponse {
+  restart_required: boolean;
+}
+
+export interface SwitchSetResponse {
+  was_on: boolean;
+}
+
 /**
  * Represents a switch (relay) of a device.
  */
@@ -75,5 +95,55 @@ export class Switch extends Component {
 
   update(data: Partial<SwitchAttributes>) {
     super.update(data);
+  }
+
+  /**
+   * Retrieves the status of this component.
+   */
+  getStatus(): PromiseLike<SwitchAttributes> {
+    return this.rpc<SwitchAttributes>('GetStatus', {
+      id: this.id,
+    });
+  }
+
+  /**
+   * Retrieves the configuration of this component.
+   */
+  getConfig(): PromiseLike<SwitchConfig> {
+    return this.rpc<SwitchConfig>('GetConfig', {
+      id: this.id,
+    });
+  }
+
+  /**
+   * Requests changes in the configuration of this component.
+   * @param config - The configuration options to set.
+   */
+  setConfig(config: Partial<SwitchConfig>): PromiseLike<SwitchConfigResponse> {
+    return this.rpc<SwitchConfigResponse>('SetConfig', {
+      id: this.id,
+      config,
+    });
+  }
+
+  /**
+   * Toggles the switch.
+   */
+  toggle(): PromiseLike<SwitchSetResponse> {
+    return this.rpc<SwitchSetResponse>('Toggle', {
+      id: this.id,
+    });
+  }
+
+  /**
+   * Sets the output of the switch.
+   * @param on - Whether to switch on or off.
+   * @param toggle - Flip-back timer, in seconds.
+   */
+  set(on: boolean, toggle?: number): PromiseLike<SwitchSetResponse> {
+    return this.rpc<SwitchSetResponse>('Set', {
+      id: this.id,
+      toggle,
+    });
   }
 }
