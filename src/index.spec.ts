@@ -1,6 +1,12 @@
 import { Device } from './devices';
 import shelliesNg from './index';
 
+class TestDevice extends Device {
+  constructor(id: string) {
+    super(id);
+  }
+}
+
 describe('ShelliesNg', () => {
   afterEach(() => {
     shelliesNg.removeAllListeners();
@@ -9,7 +15,7 @@ describe('ShelliesNg', () => {
 
   describe('.add()', () => {
     test('adds the given device', () => {
-      const device = new Device('abc123');
+      const device = new TestDevice('abc123');
 
       shelliesNg.add(device);
 
@@ -17,8 +23,8 @@ describe('ShelliesNg', () => {
     });
 
     test('throws an error when the device has already been added', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc123');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc123');
 
       shelliesNg.add(device1);
 
@@ -29,7 +35,7 @@ describe('ShelliesNg', () => {
       const listener = jest.fn();
       shelliesNg.on('add', listener);
 
-      const device = new Device('abc123');
+      const device = new TestDevice('abc123');
 
       shelliesNg.add(device);
 
@@ -40,21 +46,21 @@ describe('ShelliesNg', () => {
 
   describe('.has()', () => {
     test('returns false for unknown devices', () => {
-      expect(shelliesNg.has(new Device('abc123'))).toBe(false);
+      expect(shelliesNg.has(new TestDevice('abc123'))).toBe(false);
       expect(shelliesNg.has('abc123')).toBe(false);
     });
 
     test('returns true for known devices', () => {
-      shelliesNg.add(new Device('abc123'));
+      shelliesNg.add(new TestDevice('abc123'));
 
-      expect(shelliesNg.has(new Device('abc123'))).toBe(true);
+      expect(shelliesNg.has(new TestDevice('abc123'))).toBe(true);
       expect(shelliesNg.has('abc123')).toBe(true);
     });
   });
 
   describe('.get()', () => {
     test('returns a device when found', () => {
-      const device = new Device('abc123');
+      const device = new TestDevice('abc123');
 
       shelliesNg.add(device);
 
@@ -68,9 +74,9 @@ describe('ShelliesNg', () => {
 
   describe('.forEach()', () => {
     test('executes the callback for each device', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -87,7 +93,7 @@ describe('ShelliesNg', () => {
     });
 
     test('sets this to the given object', () => {
-      shelliesNg.add(new Device('abc123'));
+      shelliesNg.add(new TestDevice('abc123'));
 
       const that = {};
 
@@ -100,9 +106,9 @@ describe('ShelliesNg', () => {
 
   describe('.entries()', () => {
     test('returns a valid iterator', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -123,9 +129,9 @@ describe('ShelliesNg', () => {
 
   describe('.keys()', () => {
     test('returns a valid iterator', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -146,9 +152,9 @@ describe('ShelliesNg', () => {
 
   describe('.values()', () => {
     test('returns a valid iterator', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -169,9 +175,9 @@ describe('ShelliesNg', () => {
 
   describe('.[Symbol.iterator]()', () => {
     test('returns a valid iterator', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -192,8 +198,8 @@ describe('ShelliesNg', () => {
 
   describe('.delete()', () => {
     test('removes the given device', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);
@@ -208,7 +214,7 @@ describe('ShelliesNg', () => {
     });
 
     test('emits a `remove` event', () => {
-      const device = new Device('abc123');
+      const device = new TestDevice('abc123');
 
       shelliesNg.add(device);
 
@@ -221,7 +227,7 @@ describe('ShelliesNg', () => {
     });
 
     test('returns false for unknown devices', () => {
-      expect(shelliesNg.delete(new Device('abc123'))).toBe(false);
+      expect(shelliesNg.delete(new TestDevice('abc123'))).toBe(false);
       expect(shelliesNg.delete('abc123')).toBe(false);
     });
 
@@ -237,9 +243,9 @@ describe('ShelliesNg', () => {
 
   describe('.clear()', () => {
     test('removes all devices', () => {
-      shelliesNg.add(new Device('abc123'));
-      shelliesNg.add(new Device('abc124'));
-      shelliesNg.add(new Device('abc125'));
+      shelliesNg.add(new TestDevice('abc123'));
+      shelliesNg.add(new TestDevice('abc124'));
+      shelliesNg.add(new TestDevice('abc125'));
 
       shelliesNg.clear();
 
@@ -247,9 +253,9 @@ describe('ShelliesNg', () => {
     });
 
     test('emits a `remove` event for each device', () => {
-      const device1 = new Device('abc123');
-      const device2 = new Device('abc124');
-      const device3 = new Device('abc125');
+      const device1 = new TestDevice('abc123');
+      const device2 = new TestDevice('abc124');
+      const device3 = new TestDevice('abc125');
 
       shelliesNg.add(device1);
       shelliesNg.add(device2);

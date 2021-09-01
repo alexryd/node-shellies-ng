@@ -1,1 +1,1 @@
-export { Device, DeviceId } from './base';
+export * from './base';
