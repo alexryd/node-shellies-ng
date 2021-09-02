@@ -91,7 +91,9 @@ export class Shelly extends Component {
    * @param stage - The type of the new version.
    */
   installUpdate(stage: 'stable' | 'beta' = 'stable'): PromiseLike<null> {
-    return this.rpc<null>('Update');
+    return this.rpc<null>('Update', {
+      stage,
+    });
   }
 
   /**
