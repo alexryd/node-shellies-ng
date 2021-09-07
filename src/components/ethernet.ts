@@ -1,5 +1,5 @@
 import { characteristic, Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 export interface EthernetAttributes {
   ip: string | null;
@@ -27,8 +27,8 @@ export class Ethernet extends Component {
   @characteristic()
   readonly ip: string | null = null;
 
-  constructor(rpcHandler: RpcHandler) {
-    super('Eth', rpcHandler);
+  constructor(device: Device) {
+    super('Eth', device);
   }
 
   update(data: Partial<EthernetAttributes>) {

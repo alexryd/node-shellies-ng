@@ -1,4 +1,5 @@
 import { characteristic, Component } from './base';
+import { Device } from '../devices';
 import { RpcHandler } from '../rpc';
 
 type CompoundCharacteristic = {
@@ -15,6 +16,12 @@ class TestRpcHandler implements RpcHandler {
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
 
+class TestDevice extends Device {
+  constructor() {
+    super('abc123', new TestRpcHandler());
+  }
+}
+
 class TestComponent extends Component {
   @characteristic()
   readonly characteristic1: number = 0;
@@ -28,8 +35,8 @@ class TestComponent extends Component {
     characteristic2: 0,
   };
 
-  constructor() {
-    super('Test', new TestRpcHandler());
+  constructor(device: Device) {
+    super('Test', device);
   }
 
   getCharacteristics(): Set<string> | undefined {
@@ -42,10 +49,12 @@ class TestComponent extends Component {
 }
 
 describe('Component', () => {
-  let component = new TestComponent();
+  let device = new TestDevice();
+  let component = new TestComponent(device);
 
   beforeEach(() => {
-    component = new TestComponent();
+    device = new TestDevice();
+    component = new TestComponent(device);
   });
 
   describe('.characteristics', () => {
@@ -144,7 +153,7 @@ describe('Component', () => {
     test('makes a request', () => {
       expect(component.makeRequest(1)).resolves.toStrictEqual({ success: true });
 
-      expect(component.rpcHandler.request).toHaveBeenCalledWith('Test.Request', { id: 1 });
+      expect(device.rpcHandler.request).toHaveBeenCalledWith('Test.Request', { id: 1 });
     });
   });
 });

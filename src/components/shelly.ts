@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 export interface ShellyDeviceInfo {
   id: string;
@@ -40,8 +40,8 @@ export interface ShellyFirmwareUpdate {
  * This component represents the common Shelly service that all devices have.
  */
 export class Shelly extends Component {
-  constructor(rpcHandler: RpcHandler) {
-    super('Shelly', rpcHandler);
+  constructor(device: Device) {
+    super('Shelly', device);
   }
 
   /**

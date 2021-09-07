@@ -1,5 +1,5 @@
 import { characteristic, Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 export interface SwitchEnergyCounterAttributes {
   total: number;
@@ -89,8 +89,8 @@ export class Switch extends Component {
   /**
    * @param id - ID of this Switch component.
    */
-  constructor(rpcHandler: RpcHandler, readonly id: number = 0) {
-    super('Switch', rpcHandler);
+  constructor(device: Device, readonly id: number = 0) {
+    super('Switch', device);
   }
 
   update(data: Partial<SwitchAttributes>) {

@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { Device } from '../devices';
 import { RpcHandler } from '../rpc';
 import { Shelly } from './shelly';
 
@@ -8,11 +9,19 @@ class TestRpcHandler implements RpcHandler {
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
 
+class TestDevice extends Device {
+  constructor() {
+    super('abc123', new TestRpcHandler());
+  }
+}
+
 describe('Shelly', () => {
-  let component = new Shelly(new TestRpcHandler());
+  let device = new TestDevice();
+  let component = new Shelly(device);
 
   beforeEach(() => {
-    component = new Shelly(new TestRpcHandler());
+    device = new TestDevice();
+    component = new Shelly(device);
   });
 
   describe('.setAuth()', () => {
@@ -25,7 +34,7 @@ describe('Shelly', () => {
 
       component.setAuth(deviceId, password);
 
-      expect(component.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
+      expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',
         realm: deviceId,
         ha1: hash,
@@ -37,7 +46,7 @@ describe('Shelly', () => {
 
       component.setAuth(deviceId, null);
 
-      expect(component.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
+      expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',
         realm: deviceId,
         ha1: null,

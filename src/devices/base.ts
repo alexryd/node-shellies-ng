@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 
 import { Component, ComponentName } from '../components';
+import { RpcHandler } from '../rpc';
 
 export type DeviceId = string;
 
@@ -29,8 +30,9 @@ export const component = (name: ComponentName | null = null) => {
 export abstract class Device extends EventEmitter {
   /**
    * @param id - The ID of this device.
+   * @param rpcHandler - Used to make remote procedure calls.
    */
-  constructor(readonly id: DeviceId) {
+  constructor(readonly id: DeviceId, readonly rpcHandler: RpcHandler) {
     super();
 
     // make sure we have a map of components, even if we have components

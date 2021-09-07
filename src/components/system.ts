@@ -1,5 +1,5 @@
 import { characteristic, Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 export interface SystemFirmwareUpdate {
   stable?: {
@@ -85,7 +85,7 @@ export class System extends Component {
    */
   @characteristic()
   readonly ram_free: number = 0;
-  
+
   /**
    * File system total size, in bytes.
    */
@@ -104,8 +104,8 @@ export class System extends Component {
   @characteristic()
   readonly available_updates: SystemFirmwareUpdate = {};
 
-  constructor(rpcHandler: RpcHandler) {
-    super('Sys', rpcHandler);
+  constructor(device: Device) {
+    super('Sys', device);
   }
 
   update(data: Partial<SystemAttributes>) {

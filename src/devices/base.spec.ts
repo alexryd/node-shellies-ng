@@ -8,17 +8,21 @@ class TestRpcHandler implements RpcHandler {
 }
 
 class TestComponent extends Component {
-  constructor() {
-    super('Test', new TestRpcHandler());
+  constructor(device: Device) {
+    super('Test', device);
   }
 }
 
 class TestDevice extends Device {
   @component()
-  readonly component1 = new TestComponent();
+  readonly component1 = new TestComponent(this);
 
   @component('shelly')
-  readonly component2 = new TestComponent();
+  readonly component2 = new TestComponent(this);
+
+  constructor() {
+    super('abc123', new TestRpcHandler());
+  }
 
   getComponents(): Map<ComponentName, string> {
     return this.components;
@@ -26,10 +30,10 @@ class TestDevice extends Device {
 }
 
 describe('Device', () => {
-  let device = new TestDevice('abc123');
+  let device = new TestDevice();
 
   beforeEach(() => {
-    device = new TestDevice('abc123');
+    device = new TestDevice();
   });
 
   describe('.components', () => {

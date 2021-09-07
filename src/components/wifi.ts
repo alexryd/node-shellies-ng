@@ -1,5 +1,5 @@
 import { characteristic, Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 export interface WiFiAttributes {
   sta_ip: string | null;
@@ -84,8 +84,8 @@ export class WiFi extends Component {
   @characteristic()
   readonly rssi: number = 0;
 
-  constructor(rpcHandler: RpcHandler) {
-    super('WiFi', rpcHandler);
+  constructor(device: Device) {
+    super('WiFi', device);
   }
 
   update(data: Partial<WiFiAttributes>) {
@@ -115,7 +115,7 @@ export class WiFi extends Component {
       config,
     });
   }
-  
+
   /**
    * Retrieves a list of available networks.
    */

@@ -1,5 +1,5 @@
 import { Component } from './base';
-import { RpcHandler } from '../rpc';
+import { Device } from '../devices';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BluetoothLowEnergyAttributes {}
@@ -16,8 +16,8 @@ export interface BluetoothLowEnergyConfigResponse {
  * Handles the Bluetooth services of a device.
  */
 export class BluetoothLowEnergy extends Component {
-  constructor(rpcHandler: RpcHandler) {
-    super('BLE', rpcHandler);
+  constructor(device: Device) {
+    super('BLE', device);
   }
 
   /**

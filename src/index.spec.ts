@@ -1,9 +1,15 @@
 import { Device } from './devices';
+import { RpcHandler } from './rpc';
 import shelliesNg from './index';
+
+class TestRpcHandler implements RpcHandler {
+  request = jest.fn().mockResolvedValue({ success: true });
+  destroy = jest.fn().mockImplementation(() => Promise.resolve());
+}
 
 class TestDevice extends Device {
   constructor(id: string) {
-    super(id);
+    super(id, new TestRpcHandler());
   }
 }
 

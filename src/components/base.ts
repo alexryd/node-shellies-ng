@@ -1,7 +1,8 @@
 import equal from 'fast-deep-equal';
 import EventEmitter from 'eventemitter3';
 
-import { RpcHandler, RpcParams } from '../rpc';
+import { Device } from '../devices';
+import { RpcParams } from '../rpc';
 
 export type ComponentName = string;
 
@@ -33,9 +34,9 @@ export const characteristic = () => {
 export abstract class Component extends EventEmitter {
   /**
    * @param name - The name of this component. Used when making RPCs.
-   * @param rpcHandler - The handler to use when making RPCs.
+   * @param device - The device that owns this component.
    */
-  constructor(readonly name: string, readonly rpcHandler: RpcHandler) {
+  constructor(readonly name: string, readonly device: Device) {
     super();
   }
 
@@ -101,6 +102,6 @@ export abstract class Component extends EventEmitter {
    * Shorthand method for making an RPC.
    */
   protected rpc<T>(method: string, params?: RpcParams): PromiseLike<T> {
-    return this.rpcHandler.request<T>(`${this.name}.${method}`, params);
+    return this.device.rpcHandler.request<T>(`${this.name}.${method}`, params);
   }
 }
