@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 import { Device, DeviceId } from './devices';
 
-declare interface ShelliesNg {
+declare interface Shellies {
   emit(event: 'add', device: Device): boolean;
   emit(event: 'remove', device: Device): boolean;
 
@@ -10,7 +10,7 @@ declare interface ShelliesNg {
   on(event: 'remove', listener: (device: Device) => void): this;
 }
 
-class ShelliesNg extends EventEmitter {
+class Shellies extends EventEmitter {
   /**
    * Holds all devices, mapped to their IDs for quick and easy access.
    */
@@ -72,7 +72,7 @@ class ShelliesNg extends EventEmitter {
    * @param callback - Function to execute for each device.
    * @param thisArg - Value to be used as `this` when executing `callback`.
    */
-  forEach(callback: (device: Device, id: DeviceId, set: ShelliesNg) => void, thisArg?) {
+  forEach(callback: (device: Device, id: DeviceId, set: Shellies) => void, thisArg?) {
     this.devices.forEach((device, id) => {
       callback.call(thisArg, device, id, this);
     });
@@ -148,6 +148,6 @@ class ShelliesNg extends EventEmitter {
   }
 }
 
-const shelliesNg = new ShelliesNg();
+const shellies = new Shellies();
 
-export default shelliesNg;
+export default shellies;
