@@ -4,6 +4,7 @@ export * from './cloud';
 export * from './ethernet';
 export * from './input';
 export * from './mqtt';
+export * from './schedule';
 export * from './shelly';
 export * from './switch';
 export * from './system';
