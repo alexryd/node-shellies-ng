@@ -2,6 +2,7 @@ export * from './base';
 export * from './bluetooth-low-energy';
 export * from './cloud';
 export * from './ethernet';
+export * from './http';
 export * from './input';
 export * from './mqtt';
 export * from './schedule';
