@@ -8,4 +8,5 @@ export * from './schedule';
 export * from './shelly';
 export * from './switch';
 export * from './system';
+export * from './webhook';
 export * from './wifi';
