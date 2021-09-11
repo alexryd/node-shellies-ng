@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 
 import { Component, ComponentName } from '../components';
+import { HttpService, ScheduleService, ShellyService, WebhookService } from '../services';
 import { RpcHandler } from '../rpc';
 
 export type DeviceId = string;
@@ -28,6 +29,26 @@ export const component = (name: ComponentName | null = null) => {
  * Base class for all devices.
  */
 export abstract class Device extends EventEmitter {
+  /**
+   * This device's Shelly service.
+   */
+  readonly shelly = new ShellyService(this);
+
+  /**
+   * This device's Shedule service.
+   */
+  readonly schedule = new ScheduleService(this);
+
+  /**
+   * This device's Webhook service.
+   */
+  readonly webhook = new WebhookService(this);
+
+  /**
+   * This device's HTTP service.
+   */
+  readonly http = new HttpService(this);
+
   /**
    * @param id - The ID of this device.
    * @param rpcHandler - Used to make remote procedure calls.
