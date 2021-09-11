@@ -35,7 +35,7 @@ export abstract class Device extends EventEmitter {
   constructor(readonly id: DeviceId, readonly rpcHandler: RpcHandler) {
     super();
 
-    // make sure we have a map of components, even if we have components
+    // make sure we have a map of components, even if we don't have any components
     if (!this['_componentMap']) {
       this['_componentMap'] = new Map<ComponentName, string>();
     }
