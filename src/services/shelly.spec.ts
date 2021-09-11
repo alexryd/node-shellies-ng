@@ -17,11 +17,11 @@ class TestDevice extends Device {
 
 describe('Shelly', () => {
   let device = new TestDevice();
-  let component = new Shelly(device);
+  let service = new Shelly(device);
 
   beforeEach(() => {
     device = new TestDevice();
-    component = new Shelly(device);
+    service = new Shelly(device);
   });
 
   describe('.setAuth()', () => {
@@ -32,7 +32,7 @@ describe('Shelly', () => {
         .update(`admin:${deviceId}:${password}`)
         .digest('hex');
 
-      component.setAuth(deviceId, password);
+      service.setAuth(deviceId, password);
 
       expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',
@@ -44,7 +44,7 @@ describe('Shelly', () => {
     test('creates no hash when password is null', () => {
       const deviceId = 'shellypro4pm-f008d1d8b8b8';
 
-      component.setAuth(deviceId, null);
+      service.setAuth(deviceId, null);
 
       expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',

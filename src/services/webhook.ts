@@ -1,5 +1,5 @@
-import { Component } from './base';
 import { Device } from '../devices';
+import { Service } from './base';
 
 export interface WebhookSupportedResponse {
   hook_types: string[];
@@ -25,9 +25,9 @@ export interface WebhookResponse {
 }
 
 /**
- * This component represents the Webhook service which allows Shelly devices to send HTTP requests triggered by events.
+ * The Webhook service allows Shelly devices to send HTTP requests triggered by events.
  */
-export class Webhook extends Component {
+export class Webhook extends Service {
   constructor(device: Device) {
     super('Webhook', device);
   }
@@ -50,7 +50,7 @@ export class Webhook extends Component {
    * Creates a new webhook.
    * @param hook - The webhook to add.
    */
-  create(hook: Webhook): PromiseLike<WebhookResponse> {
+  create(hook: WebhookEntry): PromiseLike<WebhookResponse> {
     return this.rpc<WebhookResponse>(
       'Create',
       { ...hook },
@@ -61,7 +61,7 @@ export class Webhook extends Component {
    * Updates an existing webhook.
    * @param hook - The webhook to update.
    */
-  updateHook(hook: Partial<WebhookEntry>): PromiseLike<WebhookResponse> {
+  update(hook: Partial<WebhookEntry>): PromiseLike<WebhookResponse> {
     return this.rpc<WebhookResponse>(
       'Update',
       { ...hook },

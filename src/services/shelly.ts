@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { Component } from './base';
 import { Device } from '../devices';
+import { Service } from './base';
 
 export interface ShellyDeviceInfo {
   id: string;
@@ -37,9 +37,9 @@ export interface ShellyFirmwareUpdate {
 }
 
 /**
- * This component represents the common Shelly service that all devices have.
+ * The common Shelly service that all devices have.
  */
-export class Shelly extends Component {
+export class Shelly extends Service {
   constructor(device: Device) {
     super('Shelly', device);
   }
@@ -90,7 +90,7 @@ export class Shelly extends Component {
    * Requests an update of the device firmware.
    * @param stage - The type of the new version.
    */
-  installUpdate(stage: 'stable' | 'beta' = 'stable'): PromiseLike<null> {
+  update(stage: 'stable' | 'beta' = 'stable'): PromiseLike<null> {
     return this.rpc<null>('Update', {
       stage,
     });

@@ -1,5 +1,5 @@
-import { Component } from './base';
 import { Device } from '../devices';
+import { Service } from './base';
 
 export interface ScheduleRpcCall {
   method: string;
@@ -22,9 +22,9 @@ export interface ScheduleResponse {
 }
 
 /**
- * This component represents the Schedule service which allows execution of RPC methods at fixes times or intervals.
+ * The Schedule service allows execution of RPC methods at fixes times or intervals.
  */
-export class Schedule extends Component {
+export class Schedule extends Service {
   constructor(device: Device) {
     super('Schedule', device);
   }

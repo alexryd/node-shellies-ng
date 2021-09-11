@@ -1,5 +1,5 @@
-import { Component } from './base';
 import { Device } from '../devices';
+import { Service } from './base';
 
 export interface HttpGetResponse {
   code: number;
@@ -7,9 +7,9 @@ export interface HttpGetResponse {
 }
 
 /**
- * This component represents the HTTP service.
+ * The HTTP service enables sending HTTP requests from Shelly devices.
  */
-export class Http extends Component {
+export class Http extends Service {
   constructor(device: Device) {
     super('HTTP', device);
   }
