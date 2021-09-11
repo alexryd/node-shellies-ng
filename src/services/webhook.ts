@@ -5,7 +5,7 @@ export interface WebhookSupportedResponse {
   hook_types: string[];
 }
 
-export interface WebhookEntry {
+export interface Webhook {
   id?: number;
   cid: number;
   enable: boolean;
@@ -17,7 +17,7 @@ export interface WebhookEntry {
 }
 
 export interface WebhookListResponse {
-  hooks: WebhookEntry[];
+  hooks: Webhook[];
 }
 
 export interface WebhookResponse {
@@ -27,7 +27,7 @@ export interface WebhookResponse {
 /**
  * The Webhook service allows Shelly devices to send HTTP requests triggered by events.
  */
-export class Webhook extends Service {
+export class WebhookService extends Service {
   constructor(device: Device) {
     super('Webhook', device);
   }
@@ -50,7 +50,7 @@ export class Webhook extends Service {
    * Creates a new webhook.
    * @param hook - The webhook to add.
    */
-  create(hook: WebhookEntry): PromiseLike<WebhookResponse> {
+  create(hook: Webhook): PromiseLike<WebhookResponse> {
     return this.rpc<WebhookResponse>(
       'Create',
       { ...hook },
@@ -61,7 +61,7 @@ export class Webhook extends Service {
    * Updates an existing webhook.
    * @param hook - The webhook to update.
    */
-  update(hook: Partial<WebhookEntry>): PromiseLike<WebhookResponse> {
+  update(hook: Partial<Webhook>): PromiseLike<WebhookResponse> {
     return this.rpc<WebhookResponse>(
       'Update',
       { ...hook },

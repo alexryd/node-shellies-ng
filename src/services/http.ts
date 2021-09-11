@@ -9,7 +9,7 @@ export interface HttpGetResponse {
 /**
  * The HTTP service enables sending HTTP requests from Shelly devices.
  */
-export class Http extends Service {
+export class HttpService extends Service {
   constructor(device: Device) {
     super('HTTP', device);
   }

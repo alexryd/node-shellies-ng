@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import { Device } from '../devices';
 import { RpcHandler } from '../rpc';
-import { Shelly } from './shelly';
+import { ShellyService } from './shelly';
 
 class TestRpcHandler implements RpcHandler {
   request = jest.fn().mockResolvedValue({ success: true });
@@ -15,13 +15,13 @@ class TestDevice extends Device {
   }
 }
 
-describe('Shelly', () => {
+describe('ShellyService', () => {
   let device = new TestDevice();
-  let service = new Shelly(device);
+  let service = new ShellyService(device);
 
   beforeEach(() => {
     device = new TestDevice();
-    service = new Shelly(device);
+    service = new ShellyService(device);
   });
 
   describe('.setAuth()', () => {

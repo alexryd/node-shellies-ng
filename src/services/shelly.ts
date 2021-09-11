@@ -39,7 +39,7 @@ export interface ShellyFirmwareUpdate {
 /**
  * The common Shelly service that all devices have.
  */
-export class Shelly extends Service {
+export class ShellyService extends Service {
   constructor(device: Device) {
     super('Shelly', device);
   }

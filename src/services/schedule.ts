@@ -24,7 +24,7 @@ export interface ScheduleResponse {
 /**
  * The Schedule service allows execution of RPC methods at fixes times or intervals.
  */
-export class Schedule extends Service {
+export class ScheduleService extends Service {
   constructor(device: Device) {
     super('Schedule', device);
   }
