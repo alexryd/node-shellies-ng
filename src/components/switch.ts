@@ -22,6 +22,7 @@ export interface SwitchAttributes {
   voltage: number;
   aenergy: SwitchEnergyCounterAttributes;
   temperature: SwitchTemperatureAttributes;
+  errors: string[];
 }
 
 export interface SwitchConfig {
@@ -103,6 +104,12 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
     tC: null,
     tF: null,
   };
+
+  /**
+   * Any error conditions that have occurred.
+   */
+  @characteristic()
+  readonly errors: string[] = [];
 
   constructor(device: Device, id = 0) {
     super('Switch', device, id);
