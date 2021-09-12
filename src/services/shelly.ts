@@ -3,6 +3,10 @@ import crypto from 'crypto';
 import { Device } from '../devices';
 import { Service } from './base';
 
+export interface ShellyMethods {
+  methods: string[];
+}
+
 export interface ShellyDeviceInfo {
   id: string;
   mac: string;
@@ -56,6 +60,13 @@ export class ShellyService extends Service {
    */
   getConfig(): PromiseLike<Record<string, unknown>> {
     return this.rpc<Record<string, unknown>>('GetConfig');
+  }
+
+  /**
+   * Lists all available RPC methods.
+   */
+  listMethods(): PromiseLike<ShellyMethods> {
+    return this.rpc<ShellyMethods>('ListMethods');
   }
 
   /**
@@ -136,6 +147,18 @@ export class ShellyService extends Service {
       user,
       realm: deviceId,
       ha1: hash,
+    });
+  }
+
+  /**
+   * Uploads a custom certificate authority (CA) PEM bundle.
+   * @param data - Contents of the PEM file (null to remove the existing file).
+   * @param append - Whether more data will be appended in a subsequent call.
+   */
+  putUserCa(data: string | null, append: boolean): PromiseLike<null> {
+    return this.rpc<null>('PutUserCA', {
+      data,
+      append,
     });
   }
 }
