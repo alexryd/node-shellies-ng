@@ -16,13 +16,13 @@ export interface SwitchAttributes {
   id: number;
   source: string;
   output: boolean;
-  timer_started_at: number;
-  timer_duration: number;
-  apower: number;
-  voltage: number;
-  aenergy: SwitchEnergyCounterAttributes;
+  timer_started_at?: number;
+  timer_duration?: number;
+  apower?: number;
+  voltage?: number;
+  aenergy?: SwitchEnergyCounterAttributes;
   temperature: SwitchTemperatureAttributes;
-  errors: string[];
+  errors?: string[];
 }
 
 export interface SwitchConfig {
@@ -34,7 +34,7 @@ export interface SwitchConfig {
   auto_on_delay: number;
   auto_off: boolean;
   auto_off_delay: number;
-  power_limit: number;
+  power_limit?: number;
 }
 
 export interface SwitchConfigResponse {
@@ -65,36 +65,32 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
    * Start time of the timer (as a UNIX timestamp, in UTC).
    */
   @characteristic()
-  readonly timer_started_at: number = 0;
+  readonly timer_started_at: number | undefined;
 
   /**
    * Duration of the timer, in seconds;
    */
   @characteristic()
-  readonly timer_duration: number = 0;
+  readonly timer_duration: number | undefined;
 
   /**
    * The current (last measured) instantaneous power delivered to the attached
    * load (if applicable).
    */
   @characteristic()
-  readonly apower: number = 0;
+  readonly apower: number | undefined;
 
   /**
    * Current voltage (if applicable).
    */
   @characteristic()
-  readonly voltage: number = 0;
+  readonly voltage: number | undefined;
 
   /**
    * Information about the energy counter (if applicable).
    */
   @characteristic()
-  readonly aenergy: SwitchEnergyCounterAttributes = {
-    total: 0,
-    by_minute: [],
-    minute_ts: 0,
-  };
+  readonly aenergy: SwitchEnergyCounterAttributes | undefined;
 
   /**
    * Information about the temperature.
@@ -109,7 +105,7 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
    * Any error conditions that have occurred.
    */
   @characteristic()
-  readonly errors: string[] = [];
+  readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {
     super('Switch', device, id);

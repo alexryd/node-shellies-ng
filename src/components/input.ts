@@ -11,7 +11,7 @@ export interface InputConfig {
   name: string | null;
   type: 'switch' | 'button';
   invert: boolean;
-  factory_reset: boolean;
+  factory_reset?: boolean;
 }
 
 export interface InputConfigResponse {
