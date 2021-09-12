@@ -59,7 +59,7 @@ export interface WiFiScanResponse {
 /**
  * Handles the WiFi services of a device.
  */
-export class WiFi extends Component<WiFiAttributes, WiFiConfig, WiFiConfigResponse> {
+export class WiFi extends Component<WiFiAttributes, WiFiConfig, WiFiConfigResponse> implements WiFiAttributes {
   /**
    * IP address of the device.
    */

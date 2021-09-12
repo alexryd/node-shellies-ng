@@ -17,7 +17,7 @@ export interface CloudConfigResponse {
 /**
  * Handles the Cloud services of a device.
  */
-export class Cloud extends Component<CloudAttributes, CloudConfig, CloudConfigResponse> {
+export class Cloud extends Component<CloudAttributes, CloudConfig, CloudConfigResponse> implements CloudAttributes {
   /**
    * Whether the device is connected to the Shelly cloud.
    */

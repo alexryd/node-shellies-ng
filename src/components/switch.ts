@@ -47,12 +47,30 @@ export interface SwitchSetResponse {
 /**
  * Represents a switch (relay) of a device.
  */
-export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, SwitchConfigResponse> {
+export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, SwitchConfigResponse> implements SwitchAttributes {
+  /**
+   * Source of the last command.
+   */
+  @characteristic()
+  readonly source: string = '';
+
   /**
    * true if the output channel is currently on, false otherwise.
    */
   @characteristic()
   readonly output: boolean = false;
+
+  /**
+   * Start time of the timer (as a UNIX timestamp, in UTC).
+   */
+  @characteristic()
+  readonly timer_started_at: number = 0;
+
+  /**
+   * Duration of the timer, in seconds;
+   */
+  @characteristic()
+  readonly timer_duration: number = 0;
 
   /**
    * The current (last measured) instantaneous power delivered to the attached

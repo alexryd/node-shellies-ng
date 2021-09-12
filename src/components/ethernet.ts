@@ -20,7 +20,7 @@ export interface EthernetConfigResponse {
 /**
  * Handles the Ethernet services of a device.
  */
-export class Ethernet extends Component<EthernetAttributes, EthernetConfig, EthernetConfigResponse> {
+export class Ethernet extends Component<EthernetAttributes, EthernetConfig, EthernetConfigResponse> implements EthernetAttributes {
   /**
    * IP address of the device.
    */

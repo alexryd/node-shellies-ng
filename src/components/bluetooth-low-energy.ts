@@ -19,7 +19,7 @@ export class BluetoothLowEnergy extends Component<
   BluetoothLowEnergyAttributes,
   BluetoothLowEnergyConfig,
   BluetoothLowEnergyConfigResponse
-  > {
+  > implements BluetoothLowEnergyAttributes {
   constructor(device: Device) {
     super('BLE', device);
   }

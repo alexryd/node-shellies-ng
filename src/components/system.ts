@@ -43,7 +43,7 @@ export interface SystemConfigResponse {
 /**
  * Handles the system services of a device.
  */
-export class System extends Component<SystemAttributes, SystemConfig, SystemConfigResponse> {
+export class System extends Component<SystemAttributes, SystemConfig, SystemConfigResponse> implements SystemAttributes {
   /**
    * MAC address of the device.
    */
