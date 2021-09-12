@@ -7,7 +7,7 @@ class TestRpcHandler implements RpcHandler {
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
 
-class TestComponent extends Component {
+class TestComponent extends Component<unknown, null, null> {
   constructor(device: Device) {
     super('Test', device);
   }

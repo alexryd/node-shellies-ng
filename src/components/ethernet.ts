@@ -20,7 +20,7 @@ export interface EthernetConfigResponse {
 /**
  * Handles the Ethernet services of a device.
  */
-export class Ethernet extends Component {
+export class Ethernet extends Component<EthernetAttributes, EthernetConfig, EthernetConfigResponse> {
   /**
    * IP address of the device.
    */
@@ -29,33 +29,5 @@ export class Ethernet extends Component {
 
   constructor(device: Device) {
     super('Eth', device);
-  }
-
-  update(data: Partial<EthernetAttributes>) {
-    super.update(data);
-  }
-
-  /**
-   * Retrieves the status of this component.
-   */
-  getStatus(): PromiseLike<EthernetAttributes> {
-    return this.rpc<EthernetAttributes>('GetStatus');
-  }
-
-  /**
-   * Retrieves the configuration of this component.
-   */
-  getConfig(): PromiseLike<EthernetConfig> {
-    return this.rpc<EthernetConfig>('GetConfig');
-  }
-
-  /**
-   * Requests changes in the configuration of this component.
-   * @param config - The configuration options to set.
-   */
-  setConfig(config: Partial<EthernetConfig>): PromiseLike<EthernetConfigResponse> {
-    return this.rpc<EthernetConfigResponse>('SetConfig', {
-      config,
-    });
   }
 }

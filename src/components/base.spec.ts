@@ -22,7 +22,13 @@ class TestDevice extends Device {
   }
 }
 
-class TestComponent extends Component {
+interface TestAttributes {
+  characteristic1: number;
+  characteristic2: boolean;
+  characteristic3: CompoundCharacteristic;
+}
+
+class TestComponent extends Component<TestAttributes, null, null> {
   @characteristic()
   readonly characteristic1: number = 0;
 
@@ -136,7 +142,8 @@ describe('Component', () => {
       const listener = jest.fn();
       component.on('change', listener);
 
-      component.update({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      component.update(<any>{
         id: 4,
         characteristic1: 3,
         source: 'shelly',

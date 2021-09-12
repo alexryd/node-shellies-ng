@@ -1,4 +1,4 @@
-import { characteristic, Component } from './base';
+import { characteristic, ComponentWithId } from './base';
 import { Device } from '../devices';
 
 export interface SwitchEnergyCounterAttributes {
@@ -47,7 +47,7 @@ export interface SwitchSetResponse {
 /**
  * Represents a switch (relay) of a device.
  */
-export class Switch extends Component {
+export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, SwitchConfigResponse> {
   /**
    * true if the output channel is currently on, false otherwise.
    */
@@ -86,44 +86,8 @@ export class Switch extends Component {
     tF: null,
   };
 
-  /**
-   * @param id - ID of this Switch component.
-   */
-  constructor(device: Device, readonly id: number = 0) {
-    super('Switch', device);
-  }
-
-  update(data: Partial<SwitchAttributes>) {
-    super.update(data);
-  }
-
-  /**
-   * Retrieves the status of this component.
-   */
-  getStatus(): PromiseLike<SwitchAttributes> {
-    return this.rpc<SwitchAttributes>('GetStatus', {
-      id: this.id,
-    });
-  }
-
-  /**
-   * Retrieves the configuration of this component.
-   */
-  getConfig(): PromiseLike<SwitchConfig> {
-    return this.rpc<SwitchConfig>('GetConfig', {
-      id: this.id,
-    });
-  }
-
-  /**
-   * Requests changes in the configuration of this component.
-   * @param config - The configuration options to set.
-   */
-  setConfig(config: Partial<SwitchConfig>): PromiseLike<SwitchConfigResponse> {
-    return this.rpc<SwitchConfigResponse>('SetConfig', {
-      id: this.id,
-      config,
-    });
+  constructor(device: Device, id = 0) {
+    super('Switch', device, id);
   }
 
   /**

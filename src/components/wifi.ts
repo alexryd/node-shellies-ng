@@ -59,7 +59,7 @@ export interface WiFiScanResponse {
 /**
  * Handles the WiFi services of a device.
  */
-export class WiFi extends Component {
+export class WiFi extends Component<WiFiAttributes, WiFiConfig, WiFiConfigResponse> {
   /**
    * IP address of the device.
    */
@@ -86,34 +86,6 @@ export class WiFi extends Component {
 
   constructor(device: Device) {
     super('WiFi', device);
-  }
-
-  update(data: Partial<WiFiAttributes>) {
-    super.update(data);
-  }
-
-  /**
-   * Retrieves the status of this component.
-   */
-  getStatus(): PromiseLike<WiFiAttributes> {
-    return this.rpc<WiFiAttributes>('GetStatus');
-  }
-
-  /**
-   * Retrieves the configuration of this component.
-   */
-  getConfig(): PromiseLike<WiFiConfig> {
-    return this.rpc<WiFiConfig>('GetConfig');
-  }
-
-  /**
-   * Requests changes in the configuration of this component.
-   * @param config - The configuration options to set.
-   */
-  setConfig(config: Partial<WiFiConfig>): PromiseLike<WiFiConfigResponse> {
-    return this.rpc<WiFiConfigResponse>('SetConfig', {
-      config,
-    });
   }
 
   /**

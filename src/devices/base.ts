@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 
-import { Component, ComponentName } from '../components';
+import { ComponentLike, ComponentName } from '../components';
 import { HttpService, ScheduleService, ShellyService, WebhookService } from '../services';
 import { RpcHandler } from '../rpc';
 
@@ -81,7 +81,7 @@ export abstract class Device extends EventEmitter {
    * Returns the component with the given name.
    * @param name - The name of the component.
    */
-  getComponent(name: ComponentName): Component | undefined {
+  getComponent(name: ComponentName): ComponentLike | undefined {
     const key = this.components.get(name);
     if (key) {
       return this[key];
@@ -94,7 +94,7 @@ export abstract class Device extends EventEmitter {
    * Returns a new Iterator object that contains each of the device's
    * components.
    */
-  *[Symbol.iterator](): IterableIterator<[ComponentName, Component]> {
+  *[Symbol.iterator](): IterableIterator<[ComponentName, ComponentLike]> {
     for (const [name, key] of this.components.entries()) {
       yield [name, this[key]];
     }

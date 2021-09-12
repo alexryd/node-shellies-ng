@@ -17,7 +17,7 @@ export interface CloudConfigResponse {
 /**
  * Handles the Cloud services of a device.
  */
-export class Cloud extends Component {
+export class Cloud extends Component<CloudAttributes, CloudConfig, CloudConfigResponse> {
   /**
    * Whether the device is connected to the Shelly cloud.
    */
@@ -26,33 +26,5 @@ export class Cloud extends Component {
 
   constructor(device: Device) {
     super('Cloud', device);
-  }
-
-  update(data: Partial<CloudAttributes>) {
-    super.update(data);
-  }
-
-  /**
-   * Retrieves the status of this component.
-   */
-  getStatus(): PromiseLike<CloudAttributes> {
-    return this.rpc<CloudAttributes>('GetStatus');
-  }
-
-  /**
-   * Retrieves the configuration of this component.
-   */
-  getConfig(): PromiseLike<CloudConfig> {
-    return this.rpc<CloudConfig>('GetConfig');
-  }
-
-  /**
-   * Requests changes in the configuration of this component.
-   * @param config - The configuration options to set.
-   */
-  setConfig(config: Partial<CloudConfig>): PromiseLike<CloudConfigResponse> {
-    return this.rpc<CloudConfigResponse>('SetConfig', {
-      config,
-    });
   }
 }

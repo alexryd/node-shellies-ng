@@ -12,6 +12,15 @@ export type PrimitiveTypes = boolean | number | string;
 export type CharacteristicValue = PrimitiveTypes | PrimitiveTypes[] | null | { [key: string]: PrimitiveTypes | PrimitiveTypes[] | null };
 
 /**
+ * Interface used when passing around components, since the Component class is
+ * generic.
+ */
+export interface ComponentLike {
+  name: string;
+  device: Device;
+}
+
+/**
  * Prototype decorator used to label properties as characteristics.
  */
 export const characteristic = () => {
@@ -31,7 +40,8 @@ export const characteristic = () => {
 /**
  * Base class for all device components.
  */
-export abstract class Component extends EventEmitter {
+export abstract class Component<Attributes, Config, ConfigResponse>
+  extends EventEmitter implements ComponentLike {
   /**
    * @param name - The name of this component. Used when making RPCs.
    * @param device - The device that owns this component.
@@ -53,7 +63,7 @@ export abstract class Component extends EventEmitter {
    * updated.
    * @param data - A data object that contains characteristics and their values.
    */
-  update(data: Record<string, unknown>) {
+  update(data: Partial<Attributes>) {
     const cs = this.characteristics;
     const changed = new Set<CharacteristicName>();
 
@@ -99,9 +109,77 @@ export abstract class Component extends EventEmitter {
   }
 
   /**
+   * Retrieves the status of this component.
+   */
+  getStatus(): PromiseLike<Attributes> {
+    return this.rpc<Attributes>('GetStatus');
+  }
+
+  /**
+   * Retrieves the configuration of this component.
+   */
+  getConfig(): PromiseLike<Config> {
+    return this.rpc<Config>('GetConfig');
+  }
+
+  /**
+   * Requests changes in the configuration of this component.
+   * @param config - The configuration options to set.
+   */
+  setConfig(config: Partial<Config>): PromiseLike<ConfigResponse> {
+    return this.rpc<ConfigResponse>('SetConfig', {
+      config,
+    });
+  }
+
+  /**
    * Shorthand method for making an RPC.
    */
   protected rpc<T>(method: string, params?: RpcParams): PromiseLike<T> {
     return this.device.rpcHandler.request<T>(`${this.name}.${method}`, params);
+  }
+}
+
+/**
+ * Base class for components with an ID.
+ */
+export abstract class ComponentWithId<Attributes, Config, ConfigResponse>
+  extends Component<Attributes, Config, ConfigResponse> {
+  /**
+   * @param name - The name of this component. Used when making RPCs.
+   * @param device - The device that owns this component.
+   * @param id - ID of this component.
+   */
+  constructor(name: string, device: Device, readonly id: number = 0) {
+    super(name, device);
+  }
+
+  /**
+   * Retrieves the status of this component.
+   */
+  getStatus(): PromiseLike<Attributes> {
+    return this.rpc<Attributes>('GetStatus', {
+      id: this.id,
+    });
+  }
+
+  /**
+   * Retrieves the configuration of this component.
+   */
+  getConfig(): PromiseLike<Config> {
+    return this.rpc<Config>('GetConfig', {
+      id: this.id,
+    });
+  }
+
+  /**
+   * Requests changes in the configuration of this component.
+   * @param config - The configuration options to set.
+   */
+  setConfig(config: Partial<Config>): PromiseLike<ConfigResponse> {
+    return this.rpc<ConfigResponse>('SetConfig', {
+      id: this.id,
+      config,
+    });
   }
 }

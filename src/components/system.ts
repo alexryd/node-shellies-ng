@@ -43,7 +43,7 @@ export interface SystemConfigResponse {
 /**
  * Handles the system services of a device.
  */
-export class System extends Component {
+export class System extends Component<SystemAttributes, SystemConfig, SystemConfigResponse> {
   /**
    * MAC address of the device.
    */
@@ -106,33 +106,5 @@ export class System extends Component {
 
   constructor(device: Device) {
     super('Sys', device);
-  }
-
-  update(data: Partial<SystemAttributes>) {
-    super.update(data);
-  }
-
-  /**
-   * Retrieves the status of this component.
-   */
-  getStatus(): PromiseLike<SystemAttributes> {
-    return this.rpc<SystemAttributes>('GetStatus');
-  }
-
-  /**
-   * Retrieves the configuration of this component.
-   */
-  getConfig(): PromiseLike<SystemConfig> {
-    return this.rpc<SystemConfig>('GetConfig');
-  }
-
-  /**
-   * Requests changes in the configuration of this component.
-   * @param config - The configuration options to set.
-   */
-  setConfig(config: Partial<SystemConfig>): PromiseLike<SystemConfigResponse> {
-    return this.rpc<SystemConfigResponse>('SetConfig', {
-      config,
-    });
   }
 }
