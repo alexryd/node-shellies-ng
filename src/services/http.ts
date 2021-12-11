@@ -4,6 +4,9 @@ import { Service } from './base';
 export interface HttpGetResponse {
   code: number;
   message: string;
+  headers: {[k: string]: string};
+  body?: string;
+  body_b64?: string;
 }
 
 /**
