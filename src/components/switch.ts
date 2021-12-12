@@ -20,6 +20,8 @@ export interface SwitchAttributes {
   timer_duration?: number;
   apower?: number;
   voltage?: number;
+  current?: number;
+  pf?: number;
   aenergy?: SwitchEnergyCounterAttributes;
   temperature: SwitchTemperatureAttributes;
   errors?: string[];
@@ -34,7 +36,9 @@ export interface SwitchConfig {
   auto_on_delay: number;
   auto_off: boolean;
   auto_off_delay: number;
-  power_limit?: number;
+  power_limit?: number | null;
+  voltage_limit?: number;
+  current_limit?: number;
 }
 
 export interface SwitchConfigResponse {
@@ -81,10 +85,22 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
   readonly apower: number | undefined;
 
   /**
-   * Current voltage (if applicable).
+   * Last measured voltage (in Volts, if applicable).
    */
   @characteristic()
   readonly voltage: number | undefined;
+
+  /**
+   * Last measured current (in Amperes, if applicable).
+   */
+  @characteristic()
+  readonly current: number | undefined;
+
+  /**
+   * Last measured power factor (if applicable).
+   */
+  @characteristic()
+  readonly pf: number | undefined;
 
   /**
    * Information about the energy counter (if applicable).
@@ -123,12 +139,12 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
   /**
    * Sets the output of the switch.
    * @param on - Whether to switch on or off.
-   * @param toggle - Flip-back timer, in seconds.
+   * @param toggle_after - Flip-back timer, in seconds.
    */
-  set(on: boolean, toggle?: number): PromiseLike<SwitchSetResponse> {
+  set(on: boolean, toggle_after?: number): PromiseLike<SwitchSetResponse> {
     return this.rpc<SwitchSetResponse>('Set', {
       id: this.id,
-      toggle,
+      toggle_after,
     });
   }
 }
