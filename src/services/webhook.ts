@@ -13,14 +13,14 @@ export interface Webhook {
   name: string | null;
   ssl_ca: '*' | 'user_ca.pem' | '' | null;
   urls: string[];
-  active_between: string[] | null;
+  active_between?: string[] | null;
 }
 
 export interface WebhookListResponse {
   hooks: Webhook[];
 }
 
-export interface WebhookResponse {
+export interface WebhookCreateResponse {
   id: number;
 }
 
@@ -50,8 +50,8 @@ export class WebhookService extends Service {
    * Creates a new webhook.
    * @param hook - The webhook to add.
    */
-  create(hook: Webhook): PromiseLike<WebhookResponse> {
-    return this.rpc<WebhookResponse>(
+  create(hook: Partial<Webhook>): PromiseLike<WebhookCreateResponse> {
+    return this.rpc<WebhookCreateResponse>(
       'Create',
       { ...hook },
     );
@@ -61,8 +61,8 @@ export class WebhookService extends Service {
    * Updates an existing webhook.
    * @param hook - The webhook to update.
    */
-  update(hook: Partial<Webhook>): PromiseLike<WebhookResponse> {
-    return this.rpc<WebhookResponse>(
+  update(hook: Partial<Webhook>): PromiseLike<null> {
+    return this.rpc<null>(
       'Update',
       { ...hook },
     );
@@ -72,8 +72,8 @@ export class WebhookService extends Service {
    * Deletes a webhook.
    * @param id - ID of the webhook to delete.
    */
-  delete(id: number): PromiseLike<WebhookResponse> {
-    return this.rpc<WebhookResponse>('Delete', {
+  delete(id: number): PromiseLike<null> {
+    return this.rpc<null>('Delete', {
       id,
     });
   }
