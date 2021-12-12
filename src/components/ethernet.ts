@@ -11,6 +11,7 @@ export interface EthernetConfig {
   ip: string | null;
   netmask: string | null;
   gw: string | null;
+  nameserver: string | null;
 }
 
 export interface EthernetConfigResponse {
