@@ -11,6 +11,9 @@ export interface MqttConfig {
   user: string | null;
   pass: string | null;
   ssl_ca: '*' | 'user_ca.pem' | 'ca.pem' | null;
+  topic_prefix: string | null;
+  rpc_ntf: boolean;
+  status_ntf: boolean;
 }
 
 export interface MqttConfigResponse {
