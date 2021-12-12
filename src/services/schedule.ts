@@ -51,7 +51,7 @@ export class ScheduleService extends Service {
    * Updates an existing scheduled job.
    * @param job - The job to update.
    */
-  updateJob(job: Partial<ScheduleJob>): PromiseLike<null> {
+  update(job: Partial<ScheduleJob>): PromiseLike<null> {
     return this.rpc<null>(
       'Update',
       { ...job },
