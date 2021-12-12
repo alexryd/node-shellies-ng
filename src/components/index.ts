@@ -6,4 +6,5 @@ export * from './input';
 export * from './mqtt';
 export * from './switch';
 export * from './system';
+export * from './ui';
 export * from './wifi';
