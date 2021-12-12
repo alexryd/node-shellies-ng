@@ -20,11 +20,13 @@ export interface SystemAttributes {
   ram_free: number;
   fs_size: number;
   fs_free: number;
+  cfg_rev: number;
   available_updates: SystemFirmwareUpdate;
 }
 
 export interface SystemConfig {
   device: {
+    name: string;
     mac: string;
     fw_id: string;
   };
@@ -33,7 +35,26 @@ export interface SystemConfig {
     lat: number | null;
     lon: number | null;
   };
+  debug: {
+    mqtt: {
+      enable: boolean;
+    };
+    websocket: {
+      enable: boolean;
+    };
+    udp: {
+      addr: string | null;
+    };
+  };
   ui_data: Record<string, unknown>;
+  rpc_udp: {
+    dst_addr: string | null;
+    listen_port: number | null;
+  };
+  sntp: {
+    server: string;
+  };
+  cfg_rev: number;
 }
 
 export interface SystemConfigResponse {
@@ -97,6 +118,12 @@ export class System extends Component<SystemAttributes, SystemConfig, SystemConf
    */
   @characteristic()
   readonly fs_free: number = 0;
+
+  /**
+   * Configuration revision number.
+   */
+  @characteristic()
+  readonly cfg_rev: number = 0;
 
   /**
    * Available firmware updates, if any.
