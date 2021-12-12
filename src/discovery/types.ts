@@ -1,9 +1,8 @@
-import { DeviceId } from '../devices';
 
 export declare interface DeviceDiscoverer {
-  emit(event: 'discover', deviceId: DeviceId): boolean;
+  emit(event: 'discover', identifier: string): boolean;
 
-  on(event: 'discover', listener: (deviceId: DeviceId) => void): this;
+  on(event: 'discover', listener: (identifier: string) => void): this;
 }
 
 /**

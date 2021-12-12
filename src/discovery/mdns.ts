@@ -2,7 +2,6 @@ import EventEmitter from 'eventemitter3';
 import mDNS from 'multicast-dns';
 
 import { DeviceDiscoverer } from './types';
-import { DeviceId } from '../devices';
 
 /**
  * Defines options that are passed along to the multicast-dns library.
@@ -25,7 +24,7 @@ const DEFAULT_MDNS_OPTIONS: Readonly<MdnsOptions> = {
 /**
  * The service name that Shelly devices use to advertise themselves.
  */
-const SERVICE_NAME = '_http._tcp.local';
+const SERVICE_NAME = '_shelly._tcp.local';
 
 /**
  * A service that can discover Shelly devices using mDNS.
@@ -135,19 +134,18 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
       return;
     }
 
-    let deviceId: DeviceId | null = null;
+    let ipAddress: string | null = null;
 
-    // find the device ID among the additional information
-    for (const a of response.additionals) {
+    // find the device IP address among the answers
+    for (const a of response.answers) {
       if (a.type === 'A') {
-        deviceId = a.name;
-        break;
+        ipAddress = a.data;
       }
     }
 
-    if (deviceId) {
+    if (ipAddress) {
       // emit a `discover` event
-      this.emit('discover', deviceId);
+      this.emit('discover', ipAddress);
     }
   }
 }
