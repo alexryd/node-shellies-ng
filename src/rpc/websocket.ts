@@ -18,20 +18,6 @@ const DEFAULT_OPTIONS: Readonly<WebSocketRpcHandlerOptions> = {
   clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
 };
 
-export declare interface WebSocketRpcHandler {
-  /**
-   * The 'connect' event is emitted when a connection has been established.
-   */
-  on(event: 'connect', listener: () => void): this;
-  /**
-   * The 'disconnect' event is emitted when a connection has been closed.
-   */
-  on(event: 'disconnect', listener: (code: number, reason: string) => void): this;
-
-  emit(event: 'connect'): boolean;
-  emit(event: 'disconnect', code: number, reason: string): boolean;
-}
-
 /**
  * Makes remote procedure calls (RPCs) over WebSockets.
  */
@@ -251,7 +237,16 @@ export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
   protected handleMessage(data: Buffer) {
     // parse the data
     const d = JSON.parse(data.toString());
-    // let the JSON RPC client handle the response
-    this.client.receive(d);
+
+    if (d.id) {
+      // this is a response, let the JSON RPC client handle it
+      this.client.receive(d);
+    } else if (d.method === 'NotifyStatus') {
+      // this is a status update
+      this.emit('statusUpdate', d.params);
+    } else if (d.method === 'NotifyEvent') {
+      // this is an event
+      this.emit('event', d.params);
+    }
   }
 }
