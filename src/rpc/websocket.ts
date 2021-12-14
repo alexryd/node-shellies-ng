@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import { JSONRPCClient } from 'json-rpc-2.0';
 import WebSocket from 'ws';
 
@@ -17,10 +18,24 @@ const DEFAULT_OPTIONS: Readonly<WebSocketRpcHandlerOptions> = {
   clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
 };
 
+export declare interface WebSocketRpcHandler {
+  /**
+   * The 'connect' event is emitted when a connection has been established.
+   */
+  on(event: 'connect', listener: () => void): this;
+  /**
+   * The 'disconnect' event is emitted when a connection has been closed.
+   */
+  on(event: 'disconnect', listener: (code: number, reason: string) => void): this;
+
+  emit(event: 'connect'): boolean;
+  emit(event: 'disconnect', code: number, reason: string): boolean;
+}
+
 /**
  * Makes remote procedure calls (RPCs) over WebSockets.
  */
-export class WebSocketRpcHandler implements RpcHandler {
+export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
   /**
    * Configuration options for this handler.
    */
@@ -38,6 +53,8 @@ export class WebSocketRpcHandler implements RpcHandler {
   /**
    * Event handlers bound to `this`.
    */
+  protected readonly openHandler = this.handleOpen.bind(this);
+  protected readonly closeHandler = this.handleClose.bind(this);
   protected readonly messageHandler = this.handleMessage.bind(this);
 
   /**
@@ -45,11 +62,20 @@ export class WebSocketRpcHandler implements RpcHandler {
    * @param opts - Configuration options for this handler.
    */
   constructor(hostname: string, opts?: Partial<WebSocketRpcHandlerOptions>) {
+    super();
+
     // store all options (with possible default values)
     this.options = { ...DEFAULT_OPTIONS, ...(opts || {}) };
 
     this.socket = this.createSocket(`ws://${hostname}/rpc`);
     this.client = new JSONRPCClient((req: RpcParams): Promise<void> => this.handleRequest(req));
+  }
+
+  /**
+   * Whether the websocket is connected.
+   */
+  get connected(): boolean {
+    return this.socket.readyState === WebSocket.OPEN;
   }
 
   request<T>(method: string, params?: RpcParams): PromiseLike<T> {
@@ -69,6 +95,8 @@ export class WebSocketRpcHandler implements RpcHandler {
    */
   protected createSocket(url: string): WebSocket {
     const s = new WebSocket(url);
+    s.on('open', this.openHandler);
+    s.on('close', this.closeHandler);
     s.on('message', this.messageHandler);
     return s;
   }
@@ -140,6 +168,8 @@ export class WebSocketRpcHandler implements RpcHandler {
     }
 
     // remove event handlers
+    s.removeEventListener('open', this.openHandler);
+    s.removeEventListener('close', this.closeHandler);
     s.removeEventListener('message', this.messageHandler);
   }
 
@@ -196,6 +226,22 @@ export class WebSocketRpcHandler implements RpcHandler {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  /**
+   * Handles 'open' events from the socket.
+   */
+  protected handleOpen() {
+    this.emit('connect');
+  }
+
+  /**
+   * Handles 'close' events from the socket.
+   * @param code - A status code.
+   * @param reason - A human-readable explanation why the connection was closed.
+   */
+  protected handleClose(code: number, reason: Buffer) {
+    this.emit('disconnect', code, reason.toString());
   }
 
   /**
