@@ -1,8 +1,17 @@
+import { DeviceId } from '../devices';
+
+/**
+ * Describes an identified Shelly device.
+ */
+export interface DeviceIdentifiers {
+  deviceId?: DeviceId;
+  hostname?: string;
+}
 
 export declare interface DeviceDiscoverer {
-  emit(event: 'discover', identifier: string): boolean;
+  emit(event: 'discover', identifiers: DeviceIdentifiers): boolean;
 
-  on(event: 'discover', listener: (identifier: string) => void): this;
+  on(event: 'discover', listener: (identifiers: DeviceIdentifiers) => void): this;
 }
 
 /**

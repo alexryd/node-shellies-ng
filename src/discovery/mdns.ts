@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import mDNS from 'multicast-dns';
 
 import { DeviceDiscoverer } from './types';
+import { DeviceId } from '../devices';
 
 /**
  * Defines options that are passed along to the multicast-dns library.
@@ -118,19 +119,20 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
    * @param response - The response packets.
    */
   handleResponse(response: mDNS.ResponsePacket) {
-    let answerFound = false;
+    let deviceId: DeviceId | null = null;
 
     // see if this response contains our requested service
     for (const a of response.answers) {
-      if (a.type === 'PTR' && a.name === SERVICE_NAME) {
+      if (a.type === 'PTR' && a.name === SERVICE_NAME && a.data) {
         // this is the right service
-        answerFound = true;
+        // get the device ID
+        deviceId = a.data.split('.', 1)[0];
         break;
       }
     }
 
     // skip this response if it doesn't contain our requested service
-    if (!answerFound) {
+    if (!deviceId) {
       return;
     }
 
@@ -145,7 +147,10 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
 
     if (ipAddress) {
       // emit a `discover` event
-      this.emit('discover', ipAddress);
+      this.emit('discover', {
+        deviceId,
+        hostname: ipAddress,
+      });
     }
   }
 }
