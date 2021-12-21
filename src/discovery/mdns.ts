@@ -1,7 +1,6 @@
-import EventEmitter from 'eventemitter3';
 import mDNS from 'multicast-dns';
 
-import { DeviceDiscoverer } from './types';
+import { DeviceDiscoverer, DeviceOptionsCallback } from './base';
 import { DeviceId } from '../devices';
 
 /**
@@ -30,7 +29,7 @@ const SERVICE_NAME = '_shelly._tcp.local';
 /**
  * A service that can discover Shelly devices using mDNS.
  */
-export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscoverer {
+export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
   /**
    * A reference to the multicast-dns library.
    */
@@ -42,10 +41,12 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
   protected mdnsOptions: MdnsOptions;
 
   /**
+   * @param optsCallback - A function that takes a device ID and returns a set of configuration
+   * options for that device.
    * @param mdnsOptions - Options for the multicast-dns library.
    */
-  constructor(mdnsOptions?: MdnsOptions) {
-    super();
+  constructor(optsCallback?: DeviceOptionsCallback, mdnsOptions?: MdnsOptions) {
+    super(optsCallback);
 
     // store the multicast-dns options, with default values
     this.mdnsOptions = { ...DEFAULT_MDNS_OPTIONS, ...(mdnsOptions || {}) };
@@ -118,7 +119,7 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
    * events.
    * @param response - The response packets.
    */
-  handleResponse(response: mDNS.ResponsePacket) {
+  protected handleResponse(response: mDNS.ResponsePacket) {
     let deviceId: DeviceId | null = null;
 
     // see if this response contains our requested service
@@ -146,8 +147,7 @@ export class MdnsDeviceDiscoverer extends EventEmitter implements DeviceDiscover
     }
 
     if (ipAddress) {
-      // emit a `discover` event
-      this.emit('discover', {
+      this.handleDiscoveredDevice({
         deviceId,
         hostname: ipAddress,
       });
