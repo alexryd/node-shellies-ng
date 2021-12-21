@@ -108,6 +108,20 @@ export abstract class Device extends EventEmitter {
   }
 
   /**
+   * The model designation of the device.
+   */
+  get model(): string {
+    return (this.constructor as DeviceClass).model;
+  }
+
+  /**
+   * A human-friendly name of the device model.
+   */
+  get modelName(): string {
+    return (this.constructor as DeviceClass).modelName;
+  }
+
+  /**
    * Maps component names to property keys.
    */
   protected get components(): Map<ComponentName, string> {
