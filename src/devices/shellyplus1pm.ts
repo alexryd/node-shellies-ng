@@ -10,6 +10,9 @@ import {
 } from '../components';
 
 export class ShellyPlus1Pm extends Device {
+  static readonly model = 'SNSW-001P16EU';
+  static readonly modelName = 'Shelly Plus 1 PM';
+
   @component('sys')
   readonly system = new System(this);
 
@@ -31,3 +34,5 @@ export class ShellyPlus1Pm extends Device {
   @component('switch:0')
   readonly switch0 = new Switch(this, 0);
 }
+
+Device.registerClass(ShellyPlus1Pm);

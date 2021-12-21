@@ -12,6 +12,9 @@ import {
 } from '../components';
 
 export class ShellyPro4Pm extends Device {
+  static readonly model = 'SPSW-004PE16EU';
+  static readonly modelName = 'Shelly Pro 4 PM';
+
   @component('sys')
   readonly system = new System(this);
 
@@ -57,3 +60,5 @@ export class ShellyPro4Pm extends Device {
   @component()
   readonly ui = new Ui(this);
 }
+
+Device.registerClass(ShellyPro4Pm);
