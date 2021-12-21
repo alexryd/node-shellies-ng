@@ -14,19 +14,10 @@ export interface WebSocketRpcHandlerOptions {
   clientId: string;
 }
 
-const DEFAULT_OPTIONS: Readonly<WebSocketRpcHandlerOptions> = {
-  clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
-};
-
 /**
  * Makes remote procedure calls (RPCs) over WebSockets.
  */
 export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
-  /**
-   * Configuration options for this handler.
-   */
-  readonly options: WebSocketRpcHandlerOptions;
-
   /**
    * The underlying websocket.
    */
@@ -47,11 +38,8 @@ export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
    * @param hostname - The hostname of the Shelly device to connect to.
    * @param opts - Configuration options for this handler.
    */
-  constructor(hostname: string, opts?: Partial<WebSocketRpcHandlerOptions>) {
+  constructor(hostname: string, readonly options: WebSocketRpcHandlerOptions) {
     super();
-
-    // store all options (with possible default values)
-    this.options = { ...DEFAULT_OPTIONS, ...(opts || {}) };
 
     this.socket = this.createSocket(`ws://${hostname}/rpc`);
     this.client = new JSONRPCClient((req: RpcParams): Promise<void> => this.handleRequest(req));
@@ -248,5 +236,29 @@ export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
       // this is an event
       this.emit('event', d.params);
     }
+  }
+}
+
+/**
+ * Factory class used to create `WebSocketRpcHandler` instances.
+ */
+export class WebSocketRpcHandlerFactory {
+  /**
+   * Default `WebSocketRpcHandler` options.
+   */
+  readonly defaultOptions: WebSocketRpcHandlerOptions = {
+    clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
+  };
+
+  /**
+   * Creates a new `WebSocketRpcHandler`.
+   * @param hostname - The hostname of the Shelly device to connect to.
+   * @param opts - Configuration options for the handler.
+   */
+  create(hostname: string, opts?: Partial<WebSocketRpcHandlerOptions>): WebSocketRpcHandler {
+    // get all options (with default values)
+    const options = { ...this.defaultOptions, ...(opts || {}) };
+
+    return new WebSocketRpcHandler(hostname, options);
   }
 }
