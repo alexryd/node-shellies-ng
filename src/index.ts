@@ -1,20 +1,49 @@
 import EventEmitter from 'eventemitter3';
 
 import { Device, DeviceId } from './devices';
+import { DeviceDiscoverer, DeviceIdentifiers, DeviceOptions } from './discovery';
+import { DeviceFactory } from './devices/factory';
+import { RpcHandler, WebSocketRpcHandlerFactory } from './rpc';
 
-declare interface Shellies {
-  emit(event: 'add', device: Device): boolean;
-  emit(event: 'remove', device: Device): boolean;
+type ShelliesEvents = {
+  /**
+   * The 'add' event is emitted when a new device has been added.
+   */
+  add: (device: Device) => void;
+  /**
+   * The 'remove' event is emitted when a device has been removed.
+   */
+  remove: (device: Device) => void;
+  /**
+   * The 'error' event is emitted when an error occurs asynchronously.
+   */
+  error: (error: Error) => void;
+  /**
+   * The 'unknown' event is emitted when a device with an unrecognized model designation is discovered.
+   */
+  unknown: (deviceId: DeviceId) => void;
+};
 
-  on(event: 'add', listener: (device: Device) => void): this;
-  on(event: 'remove', listener: (device: Device) => void): this;
-}
+class Shellies extends EventEmitter<ShelliesEvents> {
+  /**
+   * Factory used to create new `WebSocketRpcHandler`s.
+   */
+  readonly websocket = new WebSocketRpcHandlerFactory();
 
-class Shellies extends EventEmitter {
   /**
    * Holds all devices, mapped to their IDs for quick and easy access.
    */
-  protected devices: Map<DeviceId, Device> = new Map();
+  protected readonly devices: Map<DeviceId, Device> = new Map();
+
+  /**
+   * Event handlers bound to `this`.
+   */
+  protected readonly discoverHandler = this.handleDiscoveredDevice.bind(this);
+
+  /**
+   * Holds IDs of devices that been discovered but not yet added.
+   */
+  protected readonly pendingDevices = new Set<DeviceId>();
 
   /**
    * The number of devices.
@@ -28,7 +57,7 @@ class Shellies extends EventEmitter {
    * error will be thrown.
    * @param device - The device to add.
    */
-  add(device: Device): this {
+  protected add(device: Device): this {
     // make sure we don't have a device with the same ID
     if (this.devices.has(device.id)) {
       throw new Error(`Device with ID ${device.id} already added`);
@@ -145,6 +174,63 @@ class Shellies extends EventEmitter {
     }
 
     this.devices.clear();
+  }
+
+  /**
+   * Registers a device discoverer, making discovered devices be added to this library.
+   * @param discoverer - The discoverer to register.
+   */
+  registerDiscoverer(discoverer: DeviceDiscoverer) {
+    discoverer.on('discover', this.discoverHandler);
+  }
+
+  /**
+   * Unregisters a previously registered device discoverer.
+   * @param discoverer - The discoverer to unregister.
+   */
+  unregisterDiscoverer(discoverer: DeviceDiscoverer) {
+    discoverer.removeListener('discover', this.discoverHandler);
+  }
+
+  /**
+   * Handles 'discover' events from device discoverers.
+   */
+  protected async handleDiscoveredDevice(identifiers: DeviceIdentifiers, opts: DeviceOptions) {
+    const deviceId = identifiers.deviceId;
+
+    if (this.devices.has(deviceId) || this.pendingDevices.has(deviceId)) {
+      // ignore if this is a known device
+      return;
+    }
+
+    this.pendingDevices.add(deviceId);
+
+    try {
+      let rpcHandler: RpcHandler | null = null;
+
+      // create an RPC handler
+      if (opts.protocol === 'websocket' && identifiers.hostname) {
+        rpcHandler = this.websocket.create(identifiers.hostname);
+      } else {
+        // we're missing something
+        throw new Error(`Missing required device identifier(s) (device ID: ${deviceId}, protocol: ${opts.protocol})`);
+      }
+
+      // create the device
+      const device = await DeviceFactory.create(deviceId, rpcHandler);
+
+      this.pendingDevices.delete(deviceId);
+
+      if (device !== undefined) {
+        // add the device
+        this.add(device);
+      } else {
+        this.emit('unknown', deviceId);
+      }
+    } catch (e) {
+      this.pendingDevices.delete(deviceId);
+      this.emit('error', e as Error);
+    }
   }
 }
 
