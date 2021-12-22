@@ -158,4 +158,19 @@ export abstract class Device extends EventEmitter {
       yield [name, this[key]];
     }
   }
+
+  /**
+   * Loads the status for all of the device's components and populates their characteristics.
+   */
+  async load() {
+    // retrieve the status
+    const status = await this.shelly.getStatus();
+
+    // update the components
+    for (const cmpnt in status) {
+      if (Object.prototype.hasOwnProperty.call(status, cmpnt) && typeof status[cmpnt] === 'object') {
+        this.getComponent(cmpnt)?.update(status[cmpnt] as Record<string, unknown>);
+      }
+    }
+  }
 }

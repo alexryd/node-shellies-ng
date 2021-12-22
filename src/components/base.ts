@@ -18,6 +18,8 @@ export type CharacteristicValue = PrimitiveTypes | PrimitiveTypes[] | null | { [
 export interface ComponentLike {
   name: string;
   device: Device;
+
+  update(data: Record<string, unknown>);
 }
 
 /**

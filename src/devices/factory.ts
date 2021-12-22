@@ -26,6 +26,8 @@ export class DeviceFactory {
 
     // create the device
     const device = new cls(deviceId, rpcHandler);
+    // load its status
+    await device.load();
 
     return device;
   }
