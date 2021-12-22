@@ -81,7 +81,7 @@ export abstract class Component<Attributes, Config, ConfigResponse>
         continue;
       }
 
-      if (typeof data[c] === 'object') {
+      if (typeof data[c] === 'object' && this[c]) {
         // if this is an object, we need to check for deep equality
         if (equal(data[c], this[c])) {
           // skip if nothing has changed
