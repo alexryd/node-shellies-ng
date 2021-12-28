@@ -1,6 +1,6 @@
 import { Device } from './devices';
 import { RpcHandler } from './rpc';
-import shellies from './index';
+import { Shellies } from './shellies';
 
 class TestRpcHandler implements RpcHandler {
   request = jest.fn().mockResolvedValue({ success: true });
@@ -14,6 +14,8 @@ class TestDevice extends Device {
 }
 
 describe('Shellies', () => {
+  const shellies = new Shellies();
+
   afterEach(() => {
     shellies.removeAllListeners();
     shellies.clear();

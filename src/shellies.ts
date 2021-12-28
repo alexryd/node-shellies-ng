@@ -24,7 +24,7 @@ type ShelliesEvents = {
   unknown: (deviceId: DeviceId) => void;
 };
 
-class Shellies extends EventEmitter<ShelliesEvents> {
+export class Shellies extends EventEmitter<ShelliesEvents> {
   /**
    * Factory used to create new `WebSocketRpcHandler`s.
    */
@@ -233,7 +233,3 @@ class Shellies extends EventEmitter<ShelliesEvents> {
     }
   }
 }
-
-const shellies = new Shellies();
-
-export default shellies;
