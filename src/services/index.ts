@@ -1,3 +1,4 @@
+export * from './base';
 export * from './http';
 export * from './schedule';
 export * from './shelly';
