@@ -2,8 +2,8 @@ import EventEmitter from 'eventemitter3';
 
 import { Device, DeviceId } from './devices';
 import { DeviceDiscoverer, DeviceIdentifiers } from './discovery';
-import { DeviceFactory } from './devices/factory';
 import { RpcHandler, WebSocketRpcHandlerFactory } from './rpc';
+import { ShellyDeviceInfo } from './services';
 
 /**
  * Defines configuration options for discovered devices.
@@ -279,6 +279,37 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   }
 
   /**
+   * Creates a device for the given device identifiers.
+   * This method will retrieve the model designation for the given device and then
+   * instantiate the right `Device` subclass for the model.
+   * @param identifiers - A set of device identifiers.
+   * @param rpcHandler - Used to make remote procedure calls.
+   */
+  protected async createDevice(identifiers: DeviceIdentifiers, rpcHandler: RpcHandler): Promise<Device | undefined> {
+    // load info about this device
+    const info = await rpcHandler.request<ShellyDeviceInfo>('Shelly.GetDeviceInfo');
+
+    // make sure the returned device ID matches
+    if (info.id !== identifiers.deviceId) {
+      throw new Error(`Unexpected device ID (returned: ${info.id}, expected: ${identifiers.deviceId})`);
+    }
+
+    // get the device class for this model
+    const cls = Device.getClass(info.model);
+    if (cls === undefined) {
+      // abort if we don't have a matching device class
+      return undefined;
+    }
+
+    // create the device
+    const device = new cls(info.id, rpcHandler);
+    // load its status
+    await device.load();
+
+    return device;
+  }
+
+  /**
    * Handles 'discover' events from device discoverers.
    */
   protected async handleDiscoveredDevice(identifiers: DeviceIdentifiers) {
@@ -308,7 +339,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       }
 
       // create the device
-      const device = await DeviceFactory.create(deviceId, rpcHandler);
+      const device = await this.createDevice(identifiers, rpcHandler);
 
       this.pendingDevices.delete(deviceId);
 
