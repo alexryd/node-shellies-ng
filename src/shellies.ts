@@ -140,17 +140,10 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   }
 
   /**
-   * Determines whether the given device has been added.
-   * @param device - The device to test.
-   * @returns `true` if the device has been added; false otherwise.
+   * Determines whether a device has been added.
+   * @param deviceOrId - The device or device ID to test.
+   * @returns `true` if the device has been added; `false` otherwise.
    */
-  has(device: Device): boolean;
-  /**
-   * Determines whether a device with the given ID has been added.
-   * @param deviceId - The device ID to test.
-   * @returns `true` if the device has been added; false otherwise.
-   */
-  has(deviceId: DeviceId): boolean;
   has(deviceOrId: Device | DeviceId): boolean {
     const id: DeviceId = deviceOrId instanceof Device ? deviceOrId.id : deviceOrId;
     return this.devices.has(id);
@@ -205,17 +198,10 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   }
 
   /**
-   * Removes the given device.
-   * @param device - The device to remove.
-   * @returns `true` if a device has been removed; `false otherwise`.
+   * Removes a device.
+   * @param deviceOrId - The device or ID of the device to remove.
+   * @returns `true` if a device has been removed; `false` otherwise.
    */
-  delete(device: Device): boolean;
-  /**
-   * Removes the device with the given ID.
-   * @param deviceId - The ID of the device to remove.
-   * @returns `true` if a device has been removed; `false otherwise`.
-   */
-  delete(deviceId: DeviceId): boolean;
   delete(deviceOrId: Device | DeviceId): boolean {
     const id: DeviceId = deviceOrId instanceof Device ? deviceOrId.id : deviceOrId;
     const device: Device | undefined = this.devices.get(id);
