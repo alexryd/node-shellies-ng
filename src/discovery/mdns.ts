@@ -1,6 +1,6 @@
 import mDNS from 'multicast-dns';
 
-import { DeviceDiscoverer, DeviceOptionsCallback } from './base';
+import { DeviceDiscoverer } from './base';
 import { DeviceId } from '../devices';
 
 /**
@@ -41,12 +41,10 @@ export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
   protected mdnsOptions: MdnsOptions;
 
   /**
-   * @param optsCallback - A function that takes a device ID and returns a set of configuration
-   * options for that device.
    * @param mdnsOptions - Options for the multicast-dns library.
    */
-  constructor(optsCallback?: DeviceOptionsCallback, mdnsOptions?: MdnsOptions) {
-    super(optsCallback);
+  constructor(mdnsOptions?: MdnsOptions) {
+    super();
 
     // store the multicast-dns options, with default values
     this.mdnsOptions = { ...DEFAULT_MDNS_OPTIONS, ...(mdnsOptions || {}) };

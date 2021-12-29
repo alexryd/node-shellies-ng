@@ -1,9 +1,54 @@
 import EventEmitter from 'eventemitter3';
 
 import { Device, DeviceId } from './devices';
-import { DeviceDiscoverer, DeviceIdentifiers, DeviceOptions } from './discovery';
+import { DeviceDiscoverer, DeviceIdentifiers } from './discovery';
 import { DeviceFactory } from './devices/factory';
 import { RpcHandler, WebSocketRpcHandlerFactory } from './rpc';
+
+/**
+ * Defines configuration options for discovered devices.
+ */
+export interface DeviceOptions {
+  /**
+   * Whether this device should be excluded.
+   */
+  exclude: boolean;
+  /**
+   * The protocol to use when communicating with the device.
+   */
+  protocol: 'websocket';
+}
+
+/**
+ * Default options for discovered devices.
+ */
+const DEFAULT_DEVICE_OPTIONS: Readonly<DeviceOptions> = {
+  exclude: false,
+  protocol: 'websocket',
+};
+
+/**
+ * Defines a function that takes a device ID and returns a set of configuration
+ * options for that device.
+ */
+export type DeviceOptionsCallback = (deviceId: DeviceId) => Partial<DeviceOptions> | undefined;
+
+/**
+ * Defines configuration options for the `Shellies` class.
+ */
+export interface ShelliesOptions {
+  /**
+   * Configuration options for devices.
+   */
+  deviceOptions: Map<DeviceId, Partial<DeviceOptions>> | DeviceOptionsCallback | null;
+}
+
+/**
+ * Default `Shellies` options.
+ */
+const DEFAULT_SHELLIES_OPTIONS: Readonly<ShelliesOptions> = {
+  deviceOptions: null,
+};
 
 type ShelliesEvents = {
   /**
@@ -19,16 +64,29 @@ type ShelliesEvents = {
    */
   error: (error: Error) => void;
   /**
+   * The 'exclude' event is emitted when a discovered device is ignored.
+   */
+  exclude: (deviceId: DeviceId) => void;
+  /**
    * The 'unknown' event is emitted when a device with an unrecognized model designation is discovered.
    */
   unknown: (deviceId: DeviceId) => void;
 };
 
+/**
+ * This is the main class for the shellies-ng library.
+ * This class manages a list of Shelly devices. New devices can be added by registering a device discoverer.
+ */
 export class Shellies extends EventEmitter<ShelliesEvents> {
   /**
    * Factory used to create new `WebSocketRpcHandler`s.
    */
   readonly websocket = new WebSocketRpcHandlerFactory();
+
+  /**
+   * Holds configuration options for this class.
+   */
+  protected options: ShelliesOptions;
 
   /**
    * Holds all devices, mapped to their IDs for quick and easy access.
@@ -44,6 +102,16 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
    * Holds IDs of devices that been discovered but not yet added.
    */
   protected readonly pendingDevices = new Set<DeviceId>();
+
+  /**
+   * @param opts - A set of configuration options.
+   */
+  constructor(opts?: Partial<ShelliesOptions>) {
+    super();
+
+    // store the options, with default values
+    this.options = { ...DEFAULT_SHELLIES_OPTIONS, ...(opts || {}) };
+  }
 
   /**
    * The number of devices.
@@ -193,13 +261,36 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   }
 
   /**
+   * Retrieves configuration options for the device with the given ID.
+   * @param deviceId - Device ID.
+   */
+  protected getDeviceOptions(deviceId: DeviceId): DeviceOptions {
+    // get all options (with defaults)
+    let opts: Partial<DeviceOptions> | undefined = undefined;
+    const deviceOptions = this.options.deviceOptions;
+
+    if (deviceOptions instanceof Map) {
+      opts = deviceOptions.get(deviceId);
+    } else if (typeof deviceOptions === 'function') {
+      opts = deviceOptions(deviceId);
+    }
+
+    return { ...DEFAULT_DEVICE_OPTIONS, ...(opts || {}) };
+  }
+
+  /**
    * Handles 'discover' events from device discoverers.
    */
-  protected async handleDiscoveredDevice(identifiers: DeviceIdentifiers, opts: DeviceOptions) {
+  protected async handleDiscoveredDevice(identifiers: DeviceIdentifiers) {
     const deviceId = identifiers.deviceId;
+    const opts = this.getDeviceOptions(deviceId);
 
     if (this.devices.has(deviceId) || this.pendingDevices.has(deviceId)) {
       // ignore if this is a known device
+      return;
+    } else if (opts.exclude) {
+      // exclude this device
+      this.emit('exclude', deviceId);
       return;
     }
 
