@@ -1,8 +1,10 @@
+import EventEmitter from 'eventemitter3';
+
 import { Component, ComponentName } from '../components';
 import { component, Device } from './base';
 import { RpcHandler } from '../rpc';
 
-class TestRpcHandler implements RpcHandler {
+class TestRpcHandler extends EventEmitter implements RpcHandler {
   request = jest.fn().mockResolvedValue({ success: true });
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
