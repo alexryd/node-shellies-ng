@@ -125,12 +125,16 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
    * error will be thrown.
    * @param device - The device to add.
    */
-  protected add(device: Device): this {
+  add(device: Device): this {
     // make sure we don't have a device with the same ID
     if (this.devices.has(device.id)) {
       throw new Error(`Device with ID ${device.id} already added`);
     }
 
+    // make sure its not marked as pending
+    this.pendingDevices.delete(device.id);
+
+    // add the device
     this.devices.set(device.id, device);
 
     // emit an `add` event
