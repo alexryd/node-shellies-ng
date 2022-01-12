@@ -144,6 +144,7 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
   set(on: boolean, toggle_after?: number): PromiseLike<SwitchSetResponse> {
     return this.rpc<SwitchSetResponse>('Set', {
       id: this.id,
+      on,
       toggle_after,
     });
   }
