@@ -54,20 +54,20 @@ export declare interface RpcHandler {
   /**
    * The 'connect' event is emitted when a connection has been established.
    */
-  on(event: 'connect', listener: () => void): this;
+  on(event: 'connect', listener: () => void, context?: unknown): this;
   /**
    * The 'disconnect' event is emitted when a connection has been closed.
    */
-  on(event: 'disconnect', listener: (code: number, reason: string) => void): this;
+  on(event: 'disconnect', listener: (code: number, reason: string) => void, context?: unknown): this;
   /**
    * The 'statusUpdate' event is emitted when an update notification is received,
    * and contains updates to one or more device components.
    */
-  on(event: 'statusUpdate', listener: (update: RpcStatusNotification) => void): this;
+  on(event: 'statusUpdate', listener: (update: RpcStatusNotification) => void, context?: unknown): this;
   /**
    * The 'event' event is emitted when an event notification is received.
    */
-  on(event: 'event', listener: (events: RpcEventNotification) => void): this;
+  on(event: 'event', listener: (events: RpcEventNotification) => void, context?: unknown): this;
 
   emit(event: 'connect'): boolean;
   emit(event: 'disconnect', code: number, reason: string): boolean;

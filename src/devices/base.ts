@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 import { ComponentLike, ComponentName } from '../components';
 import { HttpService, ScheduleService, ShellyService, WebhookService } from '../services';
-import { RpcHandler } from '../rpc';
+import { RpcHandler, RpcStatusNotification } from '../rpc';
 
 export type DeviceId = string;
 
@@ -105,6 +105,9 @@ export abstract class Device extends EventEmitter {
     if (!this['_componentMap']) {
       this['_componentMap'] = new Map<ComponentName, string>();
     }
+
+    // handle status updates
+    rpcHandler.on('statusUpdate', this.statusUpdateHandler, this);
   }
 
   /**
@@ -170,6 +173,18 @@ export abstract class Device extends EventEmitter {
     for (const cmpnt in status) {
       if (Object.prototype.hasOwnProperty.call(status, cmpnt) && typeof status[cmpnt] === 'object') {
         this.getComponent(cmpnt)?.update(status[cmpnt] as Record<string, unknown>);
+      }
+    }
+  }
+
+  /**
+   * Handles 'statusUpdate' events from our RPC handler.
+   */
+  protected statusUpdateHandler(update: RpcStatusNotification) {
+    // update each components
+    for (const cmpnt in update) {
+      if (cmpnt !== 'ts' && Object.prototype.hasOwnProperty.call(update, cmpnt) && typeof update[cmpnt] === 'object') {
+        this.getComponent(cmpnt)?.update(update[cmpnt] as Record<string, unknown>);
       }
     }
   }
