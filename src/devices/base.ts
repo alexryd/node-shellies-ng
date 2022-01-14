@@ -7,10 +7,28 @@ import { RpcHandler, RpcStatusNotification } from '../rpc';
 export type DeviceId = string;
 
 /**
+ * Information about a device.
+ */
+export interface DeviceInfo {
+  /**
+   * The device ID.
+   */
+  id: DeviceId;
+  /**
+   * The MAC address of the device.
+   */
+  mac: string;
+  /**
+   * The model designation of the device.
+   */
+  model?: string;
+}
+
+/**
  * Describes a device class and its static properties.
  */
 export interface DeviceClass {
-  new (id: DeviceId, rpcHandler: RpcHandler): Device;
+  new (info: DeviceInfo, rpcHandler: RpcHandler): Device;
 
   /**
    * The model designation of the device.
@@ -75,6 +93,16 @@ export abstract class Device extends EventEmitter {
   }
 
   /**
+   * The ID of this device.
+   */
+  readonly id: DeviceId;
+
+  /**
+   * The MAC address of this device.
+   */
+  readonly macAddress: string;
+
+  /**
    * This device's Shelly service.
    */
   readonly shelly = new ShellyService(this);
@@ -95,11 +123,15 @@ export abstract class Device extends EventEmitter {
   readonly http = new HttpService(this);
 
   /**
-   * @param id - The ID of this device.
+   * @param info - Information about this device.
    * @param rpcHandler - Used to make remote procedure calls.
    */
-  constructor(readonly id: DeviceId, readonly rpcHandler: RpcHandler) {
+  constructor(info: DeviceInfo, readonly rpcHandler: RpcHandler) {
     super();
+
+    this.id = info.id;
+    this.macAddress = info.mac;
+    this._model = info.model;
 
     // make sure we have a map of components, even if we don't have any components
     if (!this['_componentMap']) {
@@ -110,11 +142,13 @@ export abstract class Device extends EventEmitter {
     rpcHandler.on('statusUpdate', this.statusUpdateHandler, this);
   }
 
+  private _model: string | undefined;
+
   /**
-   * The model designation of the device.
+   * The model designation of this device.
    */
   get model(): string {
-    return (this.constructor as DeviceClass).model;
+    return this._model || (this.constructor as DeviceClass).model;
   }
 
   /**

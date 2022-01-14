@@ -292,7 +292,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
     }
 
     // create the device
-    const device = new cls(info.id, rpcHandler);
+    const device = new cls(info, rpcHandler);
     // load its status
     await device.loadStatus();
 
