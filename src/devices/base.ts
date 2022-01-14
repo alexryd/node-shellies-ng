@@ -165,7 +165,7 @@ export abstract class Device extends EventEmitter {
   /**
    * Loads the status for all of the device's components and populates their characteristics.
    */
-  async load() {
+  async loadStatus() {
     // retrieve the status
     const status = await this.shelly.getStatus();
 
