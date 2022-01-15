@@ -22,6 +22,28 @@ export interface DeviceInfo {
    * The model designation of the device.
    */
   model?: string;
+  /**
+   * Current firmware ID.
+   */
+  fw_id: string;
+  /**
+   * Current firmware version.
+   */
+  ver: string;
+}
+
+/**
+ * Information about the firmware that a device is running.
+ */
+export interface DeviceFirmwareInfo {
+  /**
+   * The firmware ID.
+   */
+  id: string;
+  /**
+   * The firmware version.
+   */
+  version: string;
 }
 
 /**
@@ -103,6 +125,11 @@ export abstract class Device extends EventEmitter {
   readonly macAddress: string;
 
   /**
+   * Information about the firmware that the device is running.
+   */
+  readonly firmware: DeviceFirmwareInfo;
+
+  /**
    * This device's Shelly service.
    */
   readonly shelly = new ShellyService(this);
@@ -134,6 +161,10 @@ export abstract class Device extends EventEmitter {
 
     this.id = info.id;
     this.macAddress = info.mac;
+    this.firmware = {
+      id: info.fw_id,
+      version: info.ver,
+    };
     this._model = info.model;
 
     // make sure we have a map of components, even if we don't have any components
