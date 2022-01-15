@@ -5,16 +5,12 @@ import {
   Input,
   Mqtt,
   Switch,
-  System,
   WiFi,
 } from '../components';
 
 export class ShellyPlus1Pm extends Device {
   static readonly model = 'SNSW-001P16EU';
   static readonly modelName = 'Shelly Plus 1 PM';
-
-  @component('sys')
-  readonly system = new System(this);
 
   @component()
   readonly wifi = new WiFi(this);
