@@ -83,6 +83,11 @@ export abstract class RpcHandler extends EventEmitter<RpcHandlerEvents> {
   }
 
   /**
+   * Whether this handler is connected to its device.
+   */
+  abstract get connected(): boolean;
+
+  /**
    * Sends an RPC.
    * @param method - The method to call.
    * @param params - Parameters that the method takes (if any).
