@@ -1,8 +1,7 @@
-import EventEmitter from 'eventemitter3';
 import { JSONRPCClient } from 'json-rpc-2.0';
 import WebSocket from 'ws';
 
-import { RpcHandler, RpcParams } from './types';
+import { RpcHandler, RpcParams } from './base';
 
 /**
  * Options for the WebSocket RPC handler.
@@ -17,7 +16,7 @@ export interface WebSocketRpcHandlerOptions {
 /**
  * Makes remote procedure calls (RPCs) over WebSockets.
  */
-export class WebSocketRpcHandler extends EventEmitter implements RpcHandler {
+export class WebSocketRpcHandler extends RpcHandler {
   /**
    * The underlying websocket.
    */
