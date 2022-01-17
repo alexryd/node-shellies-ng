@@ -70,7 +70,7 @@ type ShelliesEvents = {
   /**
    * The 'unknown' event is emitted when a device with an unrecognized model designation is discovered.
    */
-  unknown: (deviceId: DeviceId) => void;
+  unknown: (deviceId: DeviceId, model: string) => void;
 };
 
 /**
@@ -99,9 +99,15 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   protected readonly discoverHandler = this.handleDiscoveredDevice.bind(this);
 
   /**
-   * Holds IDs of devices that been discovered but not yet added.
+   * Holds IDs of devices that have been discovered but not yet added.
    */
   protected readonly pendingDevices = new Set<DeviceId>();
+
+  /**
+   * Holds IDs of devices that have been discovered but are excluded or whose
+   * model designation isn't recognized.
+   */
+  protected readonly ignoredDevices = new Set<DeviceId>();
 
   /**
    * @param opts - A set of configuration options.
@@ -269,34 +275,19 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   }
 
   /**
-   * Creates a device for the given device identifiers.
-   * This method will retrieve the model designation for the given device and then
-   * instantiate the right `Device` subclass for the model.
+   * Creates an `RpcHandler` for a device.
    * @param identifiers - A set of device identifiers.
-   * @param rpcHandler - Used to make remote procedure calls.
+   * @param opts - Configuration options for the device.
    */
-  protected async createDevice(identifiers: DeviceIdentifiers, rpcHandler: RpcHandler): Promise<Device | undefined> {
-    // load info about this device
-    const info = await rpcHandler.request<ShellyDeviceInfo>('Shelly.GetDeviceInfo');
-
-    // make sure the returned device ID matches
-    if (info.id !== identifiers.deviceId) {
-      throw new Error(`Unexpected device ID (returned: ${info.id}, expected: ${identifiers.deviceId})`);
+  protected createRpcHandler(identifiers: DeviceIdentifiers, opts: DeviceOptions): RpcHandler {
+    if (opts.protocol === 'websocket' && identifiers.hostname) {
+      return this.websocket.create(identifiers.hostname);
     }
 
-    // get the device class for this model
-    const cls = Device.getClass(info.model);
-    if (cls === undefined) {
-      // abort if we don't have a matching device class
-      return undefined;
-    }
-
-    // create the device
-    const device = new cls(info, rpcHandler);
-    // load its status
-    await device.loadStatus();
-
-    return device;
+    // we're missing something
+    throw new Error(
+      `Missing required device identifier(s) (device ID: ${identifiers.deviceId}, protocol: ${opts.protocol})`,
+    );
   }
 
   /**
@@ -304,13 +295,18 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
    */
   protected async handleDiscoveredDevice(identifiers: DeviceIdentifiers) {
     const deviceId = identifiers.deviceId;
+
+    if (this.devices.has(deviceId) || this.pendingDevices.has(deviceId) || this.ignoredDevices.has(deviceId)) {
+      // ignore if we've seen this device before
+      return;
+    }
+
+    // get the configuration options for this device
     const opts = this.getDeviceOptions(deviceId);
 
-    if (this.devices.has(deviceId) || this.pendingDevices.has(deviceId)) {
-      // ignore if this is a known device
-      return;
-    } else if (opts.exclude) {
+    if (opts.exclude) {
       // exclude this device
+      this.ignoredDevices.add(deviceId);
       this.emit('exclude', deviceId);
       return;
     }
@@ -318,27 +314,36 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
     this.pendingDevices.add(deviceId);
 
     try {
-      let rpcHandler: RpcHandler | null = null;
-
       // create an RPC handler
-      if (opts.protocol === 'websocket' && identifiers.hostname) {
-        rpcHandler = this.websocket.create(identifiers.hostname);
-      } else {
-        // we're missing something
-        throw new Error(`Missing required device identifier(s) (device ID: ${deviceId}, protocol: ${opts.protocol})`);
+      const rpcHandler = this.createRpcHandler(identifiers, opts);
+
+      // load info about this device
+      const info = await rpcHandler.request<ShellyDeviceInfo>('Shelly.GetDeviceInfo');
+
+      // make sure the returned device ID matches
+      if (info.id !== deviceId) {
+        throw new Error(`Unexpected device ID (returned: ${info.id}, expected: ${deviceId})`);
+      }
+
+      // get the device class for this model
+      const cls = Device.getClass(info.model);
+
+      if (cls === undefined) {
+        // abort if we don't have a matching device class
+        this.ignoredDevices.add(deviceId);
+        this.emit('unknown', deviceId, info.model);
+        return;
       }
 
       // create the device
-      const device = await this.createDevice(identifiers, rpcHandler);
+      const device = new cls(info, rpcHandler);
+      // load its status
+      await device.loadStatus();
 
       this.pendingDevices.delete(deviceId);
 
-      if (device !== undefined) {
-        // add the device
-        this.add(device);
-      } else {
-        this.emit('unknown', deviceId);
-      }
+      // add the device
+      this.add(device);
     } catch (e) {
       this.pendingDevices.delete(deviceId);
       this.emit('error', e as Error);
