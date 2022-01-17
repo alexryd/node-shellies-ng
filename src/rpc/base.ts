@@ -76,6 +76,13 @@ type RpcHandlerEvents = {
  */
 export abstract class RpcHandler extends EventEmitter<RpcHandlerEvents> {
   /**
+   * @param protocol - The protocol used to send RPCs.
+   */
+  constructor(readonly protocol: string) {
+    super();
+  }
+
+  /**
    * Sends an RPC.
    * @param method - The method to call.
    * @param params - Parameters that the method takes (if any).
@@ -88,5 +95,5 @@ export abstract class RpcHandler extends EventEmitter<RpcHandlerEvents> {
    * Closes the underlying connection, if applicable.
    * @returns A promise that resolves once the connection has been closed.
    */
-   abstract destroy(): PromiseLike<void>;
+  abstract destroy(): PromiseLike<void>;
 }

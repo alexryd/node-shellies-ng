@@ -37,8 +37,8 @@ export class WebSocketRpcHandler extends RpcHandler {
    * @param hostname - The hostname of the Shelly device to connect to.
    * @param opts - Configuration options for this handler.
    */
-  constructor(hostname: string, readonly options: WebSocketRpcHandlerOptions) {
-    super();
+  constructor(readonly hostname: string, readonly options: WebSocketRpcHandlerOptions) {
+    super('websocket');
 
     this.socket = this.createSocket(`ws://${hostname}/rpc`);
     this.client = new JSONRPCClient((req: RpcParams): Promise<void> => this.handleRequest(req));
