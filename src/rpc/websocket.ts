@@ -11,6 +11,10 @@ export interface WebSocketRpcHandlerOptions {
    * A unique ID used to identify this client when communicating with the Shelly device.
    */
   clientId: string;
+  /**
+   * The time, in milliseconds, to wait for a response before a request is aborted.
+   */
+  requestTimeout: number;
 }
 
 /**
@@ -44,15 +48,14 @@ export class WebSocketRpcHandler extends RpcHandler {
     this.client = new JSONRPCClient((req: RpcParams): Promise<void> => this.handleRequest(req));
   }
 
-  /**
-   * Whether the websocket is connected.
-   */
   get connected(): boolean {
     return this.socket.readyState === WebSocket.OPEN;
   }
 
   request<T>(method: string, params?: RpcParams): PromiseLike<T> {
-    return this.client.request(method, params);
+    return this.client
+      .timeout(this.options.requestTimeout)
+      .request(method, params);
   }
 
   destroy(): PromiseLike<void> {
@@ -247,6 +250,7 @@ export class WebSocketRpcHandlerFactory {
    */
   readonly defaultOptions: WebSocketRpcHandlerOptions = {
     clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
+    requestTimeout: 10 * 1000, // 10 seconds
   };
 
   /**
