@@ -25,11 +25,11 @@ export interface DeviceInfo {
   /**
    * Current firmware ID.
    */
-  fw_id: string;
+  fw_id?: string;
   /**
    * Current firmware version.
    */
-  ver: string;
+  ver?: string;
 }
 
 /**
@@ -39,11 +39,11 @@ export interface DeviceFirmwareInfo {
   /**
    * The firmware ID.
    */
-  id: string;
+  id?: string;
   /**
    * The firmware version.
    */
-  version: string;
+  version?: string;
 }
 
 /**
