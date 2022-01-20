@@ -19,7 +19,7 @@ class TestDevice extends Device {
         id,
         mac: id,
       },
-      new TestRpcHandler()
+      new TestRpcHandler(),
     );
   }
 }
