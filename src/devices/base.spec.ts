@@ -1,10 +1,13 @@
-import EventEmitter from 'eventemitter3';
-
 import { Component, ComponentName } from '../components';
 import { component, Device } from './base';
 import { RpcHandler } from '../rpc';
 
-class TestRpcHandler extends EventEmitter implements RpcHandler {
+class TestRpcHandler extends RpcHandler {
+  constructor() {
+    super('test');
+  }
+
+  connected = true;
   request = jest.fn().mockResolvedValue({ success: true });
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
@@ -23,7 +26,13 @@ class TestDevice extends Device {
   readonly component2 = new TestComponent(this);
 
   constructor() {
-    super('abc123', new TestRpcHandler());
+    super(
+      {
+        id: 'abc123',
+        mac: 'abc123',
+      },
+      new TestRpcHandler()
+    );
   }
 
   getComponents(): Map<ComponentName, string> {
@@ -42,7 +51,7 @@ describe('Device', () => {
     test('has the defined components', () => {
       const cs = device.getComponents();
 
-      expect(cs.size).toBe(2);
+      expect(cs.size).toBe(3);
       expect(cs.has('component1')).toBe(true);
       expect(cs.has('component2')).toBe(false);
       expect(cs.has('shelly')).toBe(true);
@@ -80,9 +89,9 @@ describe('Device', () => {
         callback(name, component);
       }
 
-      expect(callback).toHaveBeenCalledTimes(2);
-      expect(callback).toHaveBeenNthCalledWith(1, 'component1', device.component1);
-      expect(callback).toHaveBeenNthCalledWith(2, 'shelly', device.component2);
+      expect(callback).toHaveBeenCalledTimes(3);
+      expect(callback).toHaveBeenNthCalledWith(2, 'component1', device.component1);
+      expect(callback).toHaveBeenNthCalledWith(3, 'shelly', device.component2);
     });
   });
 });

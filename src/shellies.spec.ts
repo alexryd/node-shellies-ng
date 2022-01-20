@@ -1,17 +1,26 @@
-import EventEmitter from 'eventemitter3';
-
 import { Device } from './devices';
 import { RpcHandler } from './rpc';
 import { Shellies } from './shellies';
 
-class TestRpcHandler extends EventEmitter implements RpcHandler {
+class TestRpcHandler extends RpcHandler {
+  constructor() {
+    super('test');
+  }
+
+  connected = true;
   request = jest.fn().mockResolvedValue({ success: true });
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
 
 class TestDevice extends Device {
   constructor(id: string) {
-    super(id, new TestRpcHandler());
+    super(
+      {
+        id,
+        mac: id,
+      },
+      new TestRpcHandler()
+    );
   }
 }
 

@@ -1,18 +1,28 @@
 import crypto from 'crypto';
-import EventEmitter from 'eventemitter3';
 
 import { Device } from '../devices';
 import { RpcHandler } from '../rpc';
 import { ShellyService } from './shelly';
 
-class TestRpcHandler extends EventEmitter implements RpcHandler {
+class TestRpcHandler extends RpcHandler {
+  constructor() {
+    super('test');
+  }
+
+  connected = true;
   request = jest.fn().mockResolvedValue({ success: true });
   destroy = jest.fn().mockImplementation(() => Promise.resolve());
 }
 
 class TestDevice extends Device {
   constructor() {
-    super('abc123', new TestRpcHandler());
+    super(
+      {
+        id: 'abc123',
+        mac: 'abc123',
+      },
+      new TestRpcHandler()
+    );
   }
 }
 
