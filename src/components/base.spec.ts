@@ -48,9 +48,9 @@ class TestComponent extends Component<TestAttributes, null, null> {
 
   @characteristic()
   readonly characteristic3: CompoundCharacteristic = {
-    characteristic1: null,
-    characteristic2: 0,
-  };
+      characteristic1: null,
+      characteristic2: 0,
+    };
 
   constructor(device: Device) {
     super('Test', device);

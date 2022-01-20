@@ -113,9 +113,9 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, Swit
    */
   @characteristic()
   readonly temperature: SwitchTemperatureAttributes = {
-    tC: null,
-    tF: null,
-  };
+      tC: null,
+      tF: null,
+    };
 
   /**
    * Any error conditions that have occurred.
