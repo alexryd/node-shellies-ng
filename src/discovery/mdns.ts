@@ -60,7 +60,10 @@ export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
 
     this.mdns = mDNS(this.mdnsOptions);
 
-    this.mdns.on('response', response => this.handleResponse(response));
+    this.mdns
+      .on('response', (response) => this.handleResponse(response))
+      .on('error', (error) => this.emit('error', error))
+      .on('warning', (error) => this.emit('error', error));
 
     await this.waitUntilReady();
     await this.sendQuery();

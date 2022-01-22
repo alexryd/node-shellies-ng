@@ -20,6 +20,10 @@ type DeviceDiscovererEvents = {
    * The 'discover' event is emitted when a device is discovered.
    */
   discover: (identifiers: DeviceIdentifiers) => void;
+  /**
+   * The 'error' event is emitted if an asynchronous error occurs.
+   */
+  error: (error: Error) => void;
 };
 
 /**
