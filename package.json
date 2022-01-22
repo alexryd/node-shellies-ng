@@ -11,8 +11,8 @@
     "build": "rimraf ./dist && tsc",
     "lint": "eslint ./src --ext .ts,.js --max-warnings=0",
     "test": "jest",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint"
+    "preversion": "npm run build && npm run lint && npm test",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
