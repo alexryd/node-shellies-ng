@@ -60,9 +60,9 @@ type ShelliesEvents = {
    */
   remove: (device: Device) => void;
   /**
-   * The 'error' event is emitted when an error occurs asynchronously.
+   * The 'error' event is emitted if an error occurs asynchronously.
    */
-  error: (error: Error) => void;
+  error: (deviceId: DeviceId, error: Error) => void;
   /**
    * The 'exclude' event is emitted when a discovered device is ignored.
    */
@@ -346,7 +346,19 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       this.add(device);
     } catch (e) {
       this.pendingDevices.delete(deviceId);
-      this.emit('error', e as Error);
+
+      // create a custom Error
+      const message = e instanceof Error ? e.message : String(e);
+      const error = new Error(`Failed to add discovered device (id: ${deviceId}): ${message}`);
+
+      if (e instanceof Error) {
+        error.stack = e.stack;
+      } else {
+        Error.captureStackTrace(error);
+      }
+
+      // emit the error
+      this.emit('error', deviceId, error);
     }
   }
 }

@@ -69,6 +69,10 @@ type RpcHandlerEvents = {
    * The 'event' event is emitted when an event notification is received.
    */
   event: (events: RpcEventNotification) => void;
+  /**
+   * The 'error' event is emitted if an error occurs.
+   */
+  error: (error: Error) => void;
 };
 
 /**

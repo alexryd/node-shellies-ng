@@ -36,6 +36,7 @@ export class WebSocketRpcHandler extends RpcHandler {
   protected readonly openHandler = this.handleOpen.bind(this);
   protected readonly closeHandler = this.handleClose.bind(this);
   protected readonly messageHandler = this.handleMessage.bind(this);
+  protected readonly errorHandler = this.handleError.bind(this);
 
   /**
    * @param hostname - The hostname of the Shelly device to connect to.
@@ -70,11 +71,11 @@ export class WebSocketRpcHandler extends RpcHandler {
    * @param url - The URL to connect to.
    */
   protected createSocket(url: string): WebSocket {
-    const s = new WebSocket(url);
-    s.on('open', this.openHandler);
-    s.on('close', this.closeHandler);
-    s.on('message', this.messageHandler);
-    return s;
+    return new WebSocket(url)
+      .on('open', this.openHandler)
+      .on('close', this.closeHandler)
+      .on('message', this.messageHandler)
+      .on('error', this.errorHandler);
   }
 
   /**
@@ -113,7 +114,8 @@ export class WebSocketRpcHandler extends RpcHandler {
     return new Promise((resolve, reject) => {
       // reject if the socket fails to connect
       const closeHandler = (code: number, reason: Buffer) => {
-        reject(new Error(`Connection closed (${reason.toString()}`));
+        const msg = reason.length > 0 ? reason.toString() : `code: ${code}`;
+        reject(new Error(`Error connecting to device (${msg})`));
       };
       s.once('close', closeHandler);
 
@@ -135,7 +137,7 @@ export class WebSocketRpcHandler extends RpcHandler {
       case WebSocket.OPEN:
       case WebSocket.CONNECTING:
         // close the socket
-        s.close();
+        s.close(1006, 'User request');
         // fall through
 
       case WebSocket.CLOSING:
@@ -144,9 +146,11 @@ export class WebSocketRpcHandler extends RpcHandler {
     }
 
     // remove event handlers
-    s.removeEventListener('open', this.openHandler);
-    s.removeEventListener('close', this.closeHandler);
-    s.removeEventListener('message', this.messageHandler);
+    s
+      .off('open', this.openHandler)
+      .off('close', this.closeHandler)
+      .off('message', this.messageHandler)
+      .off('error', this.errorHandler);
   }
 
   /**
@@ -238,6 +242,14 @@ export class WebSocketRpcHandler extends RpcHandler {
       // this is an event
       this.emit('event', d.params);
     }
+  }
+
+  /**
+   * Handles errors from the websocket.
+   * @param error - The error.
+   */
+  protected handleError(error: Error) {
+    this.emit('error', error);
   }
 }
 
