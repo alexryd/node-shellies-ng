@@ -1,4 +1,5 @@
 import mDNS from 'multicast-dns';
+import os from 'os';
 
 import { DeviceDiscoverer } from './base';
 import { DeviceId } from '../devices';
@@ -58,7 +59,9 @@ export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
       return;
     }
 
-    this.mdns = mDNS(this.mdnsOptions);
+    this.mdns = mDNS({
+      interface: this.getNetworkInterface(this.mdnsOptions.interface),
+    });
 
     this.mdns
       .on('response', (response) => this.handleResponse(response))
@@ -67,6 +70,49 @@ export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
 
     await this.waitUntilReady();
     await this.sendQuery();
+  }
+
+  /**
+   * Validates the given network interface name or address.
+   * @param iface - An interface name or address.
+   * @returns If a valid interface name is given, the address for that interface
+   * is returned. If a valid address is given, that same address is returned.
+   * @throws Throws an error if the given name or address could not be found.
+   */
+  protected getNetworkInterface(iface: string | undefined): string | undefined {
+    if (!iface) {
+      // skip if no interface has been specified
+      return undefined;
+    }
+
+    // get all available interfaces
+    const ifaces = os.networkInterfaces();
+
+    // if an interface name has been given, return its address
+    const ifc = ifaces[iface];
+    if (ifc && ifc.length > 0) {
+      // return the first address
+      return ifc[0].address;
+    }
+
+    // otherwise, go through each interface and see if there is one with the
+    // given address
+    for (const i in ifaces) {
+      const ifc = ifaces[i];
+      if (!ifc) {
+        continue;
+      }
+
+      for (const ii of ifc) {
+        if (ii.address === iface) {
+          // address found, so it's valid
+          return ii.address;
+        }
+      }
+    }
+
+    // the given value doesn't match any available interface name or address
+    throw new Error(`Invalid network interface "${iface}"`);
   }
 
   /**
