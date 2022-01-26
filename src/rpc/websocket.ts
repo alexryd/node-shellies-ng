@@ -1,6 +1,6 @@
-import { JSONRPCClient } from 'json-rpc-2.0';
 import WebSocket from 'ws';
 
+import { JSONRPCClientWithAuthentication } from './auth';
 import { RpcHandler, RpcParams } from './base';
 
 /**
@@ -15,6 +15,10 @@ export interface WebSocketRpcHandlerOptions {
    * The time, in milliseconds, to wait for a response before a request is aborted.
    */
   requestTimeout: number;
+  /**
+   * The password to use if the Shelly device requires authentication.
+   */
+  password?: string;
 }
 
 /**
@@ -28,7 +32,7 @@ export class WebSocketRpcHandler extends RpcHandler {
   /**
    * Handles parsing of JSON RPC requests and responses.
    */
-  protected readonly client: JSONRPCClient;
+  protected readonly client: JSONRPCClientWithAuthentication;
 
   /**
    * Event handlers bound to `this`.
@@ -46,7 +50,10 @@ export class WebSocketRpcHandler extends RpcHandler {
     super('websocket');
 
     this.socket = this.createSocket(`ws://${hostname}/rpc`);
-    this.client = new JSONRPCClient((req: RpcParams): Promise<void> => this.handleRequest(req));
+    this.client = new JSONRPCClientWithAuthentication(
+      (req: RpcParams): Promise<void> => this.handleRequest(req),
+      options.password,
+    );
   }
 
   get connected(): boolean {

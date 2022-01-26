@@ -21,6 +21,11 @@ export interface DeviceOptions {
    * The protocol to use when communicating with the device.
    */
   protocol: 'websocket';
+  /**
+   * The password to use if the Shelly device requires authentication.
+   * This is used with WebSocket connections.
+   */
+  password?: string;
 }
 
 /**
@@ -285,16 +290,17 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
   /**
    * Creates an `RpcHandler` for a device.
    * @param identifiers - A set of device identifiers.
-   * @param opts - Configuration options for the device.
+   * @param options - Configuration options for the device.
    */
-  protected createRpcHandler(identifiers: DeviceIdentifiers, opts: DeviceOptions): RpcHandler {
-    if (opts.protocol === 'websocket' && identifiers.hostname) {
-      return this.websocket.create(identifiers.hostname, this.options.websocket);
+  protected createRpcHandler(identifiers: DeviceIdentifiers, options: DeviceOptions): RpcHandler {
+    if (options.protocol === 'websocket' && identifiers.hostname) {
+      const opts = { ...this.options.websocket, password: options.password };
+      return this.websocket.create(identifiers.hostname, opts);
     }
 
     // we're missing something
     throw new Error(
-      `Missing required device identifier(s) (device ID: ${identifiers.deviceId}, protocol: ${opts.protocol})`,
+      `Missing required device identifier(s) (device ID: ${identifiers.deviceId}, protocol: ${options.protocol})`,
     );
   }
 
