@@ -61,6 +61,10 @@ type RpcHandlerEvents = {
    */
   disconnect: (code: number, reason: string) => void;
   /**
+   * The 'request' event is emitted when a new request is about to be sent.
+   */
+  request: (method: string, params?: RpcParams) => void;
+  /**
    * The 'statusUpdate' event is emitted when an update notification is received,
    * and contains updates to one or more device components.
    */

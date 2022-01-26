@@ -61,6 +61,8 @@ export class WebSocketRpcHandler extends RpcHandler {
   }
 
   request<T>(method: string, params?: RpcParams): PromiseLike<T> {
+    this.emit('request', method, params);
+
     return this.client
       .timeout(this.options.requestTimeout)
       .request(method, params);
