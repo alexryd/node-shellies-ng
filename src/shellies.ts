@@ -2,7 +2,11 @@ import EventEmitter from 'eventemitter3';
 
 import { Device, DeviceId } from './devices';
 import { DeviceDiscoverer, DeviceIdentifiers } from './discovery';
-import { RpcHandler, WebSocketRpcHandlerFactory } from './rpc';
+import {
+  RpcHandler,
+  WebSocketRpcHandlerFactory,
+  WebSocketRpcHandlerOptions,
+} from './rpc';
 import { ShellyDeviceInfo } from './services';
 
 /**
@@ -37,6 +41,10 @@ export type DeviceOptionsCallback = (deviceId: DeviceId) => Partial<DeviceOption
  * Defines configuration options for the `Shellies` class.
  */
 export interface ShelliesOptions {
+  /**
+   * Configuration options for WebSockets.
+   */
+  websocket?: WebSocketRpcHandlerOptions;
   /**
    * Configuration options for devices.
    */
@@ -281,7 +289,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
    */
   protected createRpcHandler(identifiers: DeviceIdentifiers, opts: DeviceOptions): RpcHandler {
     if (opts.protocol === 'websocket' && identifiers.hostname) {
-      return this.websocket.create(identifiers.hostname);
+      return this.websocket.create(identifiers.hostname, this.options.websocket);
     }
 
     // we're missing something
