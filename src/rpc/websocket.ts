@@ -146,7 +146,7 @@ export class WebSocketRpcHandler extends RpcHandler {
       case WebSocket.OPEN:
       case WebSocket.CONNECTING:
         // close the socket
-        s.close(1006, 'User request');
+        s.close(1000, 'User request');
         // fall through
 
       case WebSocket.CLOSING:
