@@ -83,7 +83,7 @@ type ShelliesEvents = {
   /**
    * The 'unknown' event is emitted when a device with an unrecognized model designation is discovered.
    */
-  unknown: (deviceId: DeviceId, model: string) => void;
+  unknown: (deviceId: DeviceId, model: string, identifiers: DeviceIdentifiers) => void;
 };
 
 /**
@@ -345,7 +345,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       if (cls === undefined) {
         // abort if we don't have a matching device class
         this.ignoredDevices.add(deviceId);
-        this.emit('unknown', deviceId, info.model);
+        this.emit('unknown', deviceId, info.model, identifiers);
         return;
       }
 
