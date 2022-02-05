@@ -2,7 +2,7 @@ import equal from 'fast-deep-equal';
 import EventEmitter from 'eventemitter3';
 
 import { Device } from '../devices';
-import { RpcParams } from '../rpc';
+import { RpcEvent, RpcParams } from '../rpc';
 
 export type ComponentName = string;
 
@@ -20,6 +20,7 @@ export interface ComponentLike {
   device: Device;
 
   update(data: Record<string, unknown>);
+  handleEvent(event: RpcEvent);
 }
 
 /**
@@ -107,6 +108,17 @@ export abstract class Component<Attributes, Config, ConfigResponse>
     // emit all change events after the characteristics have been updated
     for (const c of changed) {
       this.emit('change', c, this[c]);
+    }
+  }
+
+  /**
+   * Handles events received from the device RPC handler.
+   * Subclasses should override this method to handle their specific events.
+   * @param event - The event that has occurred.
+   */
+  handleEvent(event: RpcEvent) {
+    if (event.event === 'config_changed') {
+      this.emit('configChange', event.cfg_rev as number, event.restart_required as boolean);
     }
   }
 

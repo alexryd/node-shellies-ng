@@ -16,6 +16,29 @@ export interface RpcStatusNotification {
   [ component: string ]: unknown;
 }
 
+export interface RpcEvent {
+  /**
+   * The component that this event belongs to.
+   */
+  component: string;
+  /**
+   * The instance ID of the component, if applicable.
+   */
+  id?: number;
+  /**
+   * The name of the event.
+   */
+  event: string;
+  /**
+   * A UNIX timestamp.
+   */
+  ts: number;
+  /**
+   * Additional properties.
+   */
+  [ p: string ]: unknown;
+}
+
 /**
  * Describes an event notification.
  */
@@ -27,28 +50,7 @@ export interface RpcEventNotification {
   /**
    * A list of one or more events that have occurred.
    */
-  events: Array<{
-    /**
-     * The component that this event belongs to.
-     */
-    component: string;
-    /**
-     * The instance ID of the component, if applicable.
-     */
-    id?: number;
-    /**
-     * The name of the event.
-     */
-    event: string;
-    /**
-     * A UNIX timestamp.
-     */
-    ts: number;
-    /**
-     * Additional properties.
-     */
-    [ p: string ]: unknown;
-  }>;
+  events: RpcEvent[];
 }
 
 type RpcHandlerEvents = {
