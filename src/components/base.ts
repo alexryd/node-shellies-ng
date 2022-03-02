@@ -108,6 +108,7 @@ export abstract class Component<Attributes, Config, ConfigResponse>
     // emit all change events after the characteristics have been updated
     for (const c of changed) {
       this.emit('change', c, this[c]);
+      this.emit('change:' + c, this[c]);
     }
   }
 
