@@ -1,5 +1,6 @@
 import { characteristic, ComponentWithId } from './base';
 import { Device } from '../devices';
+import { RpcEvent } from '../rpc';
 
 export interface InputAttributes {
   id: number;
@@ -30,5 +31,32 @@ export class Input extends ComponentWithId<InputAttributes, InputConfig, InputCo
 
   constructor(device: Device, id = 0) {
     super('Input', device, id);
+  }
+
+  handleEvent(event: RpcEvent) {
+    switch (event.event) {
+      case 'btn_down':
+        this.emit('buttonDown');
+        break;
+
+      case 'btn_up':
+        this.emit('buttonUp');
+        break;
+
+      case 'single_push':
+        this.emit('singlePush');
+        break;
+
+      case 'double_push':
+        this.emit('doublePush');
+        break;
+
+      case 'long_push':
+        this.emit('longPush');
+        break;
+
+      default:
+        super.handleEvent(event);
+    }
   }
 }
