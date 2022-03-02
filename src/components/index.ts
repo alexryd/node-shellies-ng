@@ -1,6 +1,7 @@
 export * from './base';
 export * from './bluetooth-low-energy';
 export * from './cloud';
+export * from './cover';
 export * from './ethernet';
 export * from './input';
 export * from './mqtt';
