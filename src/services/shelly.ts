@@ -15,8 +15,24 @@ export interface ShellyDeviceInfo {
   fw_id: string;
   ver: string;
   app: string;
+  profile?: string;
   auth_en: boolean;
   auth_domain: string | null;
+}
+
+export interface ShellyProfiles {
+  profiles: Array<{
+    [name: string]: {
+      components: Array<{
+        type: string;
+        count: number;
+      }>;
+    };
+  }>;
+}
+
+export interface ShellySetProfileResponse {
+  profile_was: string;
 }
 
 export interface ShellyTimezones {
@@ -77,6 +93,23 @@ export class ShellyService extends Service {
   }
 
   /**
+   * Retrieves a list of all available profiles and the type/count of functional components exposed for each profile.
+   */
+  listProfiles(): PromiseLike<ShellyProfiles> {
+    return this.rpc<ShellyProfiles>('ListProfiles');
+  }
+
+  /**
+   * Sets the device profile.
+   * @param name - Name of the device profile.
+   */
+  setProfile(name: string): PromiseLike<ShellySetProfileResponse> {
+    return this.rpc<ShellySetProfileResponse>('SetProfile', {
+      name,
+    });
+  }
+
+  /**
    * Retrieves a list of all timezones.
    */
   listTimezones(): PromiseLike<ShellyTimezones> {
@@ -99,11 +132,14 @@ export class ShellyService extends Service {
 
   /**
    * Requests an update of the device firmware.
+   * Either `stage` or `url` must be specified.
    * @param stage - The type of the new version.
+   * @param url - URL of the update.
    */
-  update(stage: 'stable' | 'beta' = 'stable'): PromiseLike<null> {
+  update(stage?: 'stable' | 'beta', url?: string): PromiseLike<null> {
     return this.rpc<null>('Update', {
       stage,
+      url,
     });
   }
 
@@ -123,36 +159,35 @@ export class ShellyService extends Service {
 
   /**
    * Requests a reboot of the device.
-   * @param delay - A delay until the device reboots, in milliseconds. The
+   * @param delay_ms - A delay until the device reboots, in milliseconds. The
    * minimum delay is 500 ms.
    */
-  reboot(delay?: number): PromiseLike<null> {
+  reboot(delay_ms?: number): PromiseLike<null> {
     return this.rpc<null>('Reboot', {
-      delay,
+      delay_ms,
     });
   }
 
   /**
    * Sets the authentication details (password) for the device.
-   * @param deviceId - The ID of the device.
-   * @param password - The new password. Set to null to disable.
+   * @param password - The new password. Set to `null` to disable.
    */
-  setAuth(deviceId: string, password: string | null): PromiseLike<null> {
+  setAuth(password: string | null): PromiseLike<null> {
     const user = 'admin';
     const hash = password === null ? null : crypto.createHash('sha256')
-      .update(`${user}:${deviceId}:${password}`)
+      .update(`${user}:${this.device.id}:${password}`)
       .digest('hex');
 
     return this.rpc<null>('SetAuth', {
       user,
-      realm: deviceId,
+      realm: this.device.id,
       ha1: hash,
     });
   }
 
   /**
    * Uploads a custom certificate authority (CA) PEM bundle.
-   * @param data - Contents of the PEM file (null to remove the existing file).
+   * @param data - Contents of the PEM file (`null` to remove the existing file).
    * @param append - Whether more data will be appended in a subsequent call.
    */
   putUserCa(data: string | null, append: boolean): PromiseLike<null> {

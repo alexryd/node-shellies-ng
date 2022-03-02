@@ -37,29 +37,26 @@ describe('ShellyService', () => {
 
   describe('.setAuth()', () => {
     test('creates a valid hash', () => {
-      const deviceId = 'shellypro4pm-f008d1d8b8b8';
       const password = 'qwerty';
       const hash = crypto.createHash('sha256')
-        .update(`admin:${deviceId}:${password}`)
+        .update(`admin:${device.id}:${password}`)
         .digest('hex');
 
-      service.setAuth(deviceId, password);
+      service.setAuth(password);
 
       expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',
-        realm: deviceId,
+        realm: device.id,
         ha1: hash,
       });
     });
 
     test('creates no hash when password is null', () => {
-      const deviceId = 'shellypro4pm-f008d1d8b8b8';
-
-      service.setAuth(deviceId, null);
+      service.setAuth(null);
 
       expect(device.rpcHandler.request).toHaveBeenCalledWith('Shelly.SetAuth', {
         user: 'admin',
-        realm: deviceId,
+        realm: device.id,
         ha1: null,
       });
     });
