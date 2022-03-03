@@ -27,8 +27,10 @@ export interface SystemAttributes {
 export interface SystemConfig {
   device: {
     name: string;
+    eco_mode: boolean;
     mac: string;
     fw_id: string;
+    profile?: string;
   };
   location: {
     tz: string | null;
