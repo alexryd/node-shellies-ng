@@ -36,9 +36,10 @@ export interface SwitchConfig {
   auto_on_delay: number;
   auto_off: boolean;
   auto_off_delay: number;
+  input_id: number;
   power_limit?: number | null;
-  voltage_limit?: number;
-  current_limit?: number;
+  voltage_limit?: number | null;
+  current_limit?: number | null;
 }
 
 export interface SwitchConfigResponse {
