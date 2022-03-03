@@ -3,7 +3,7 @@ import { Service } from './base';
 
 export interface ScheduleRpcCall {
   method: string;
-  params?: Record<string, unknown>[];
+  params?: Record<string, unknown>;
 }
 
 export interface ScheduleJob {
