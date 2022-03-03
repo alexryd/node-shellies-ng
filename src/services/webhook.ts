@@ -11,7 +11,7 @@ export interface Webhook {
   enable: boolean;
   event: string;
   name: string | null;
-  ssl_ca: '*' | 'user_ca.pem' | '' | null;
+  ssl_ca?: '*' | 'user_ca.pem' | '' | null;
   urls: string[];
   active_between?: string[] | null;
 }
