@@ -1,5 +1,6 @@
 import { characteristic, Component } from './base';
 import { Device } from '../devices';
+import { RpcEvent } from '../rpc';
 
 export interface SystemFirmwareUpdate {
   stable?: {
@@ -135,5 +136,28 @@ export class System extends Component<SystemAttributes, SystemConfig, SystemConf
 
   constructor(device: Device) {
     super('Sys', device);
+  }
+
+  handleEvent(event: RpcEvent) {
+    switch (event.event) {
+      case 'ota_begin':
+        this.emit('otaBegin', event.msg);
+        break;
+
+      case 'ota_progress':
+        this.emit('otaProgress', event.progress_percent, event.msg);
+        break;
+
+      case 'ota_success':
+        this.emit('otaSuccess', event.msg);
+        break;
+
+      case 'ota_error':
+        this.emit('otaError', event.msg);
+        break;
+
+      default:
+        super.handleEvent(event);
+    }
   }
 }
