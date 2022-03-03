@@ -9,7 +9,7 @@ export interface MqttConfig {
   enable: boolean;
   server: string | null;
   user: string | null;
-  pass: string | null;
+  pass?: string | null;
   ssl_ca: '*' | 'user_ca.pem' | 'ca.pem' | null;
   topic_prefix: string | null;
   rpc_ntf: boolean;
