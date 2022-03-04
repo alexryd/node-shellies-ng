@@ -43,8 +43,7 @@ export const characteristic = () => {
 /**
  * Base class for all device components.
  */
-export abstract class Component<Attributes, Config, ConfigResponse>
-  extends EventEmitter implements ComponentLike {
+export abstract class ComponentBase extends EventEmitter implements ComponentLike {
   /**
    * @param name - The name of this component. Used when making RPCs.
    * @param device - The device that owns this component.
@@ -66,7 +65,7 @@ export abstract class Component<Attributes, Config, ConfigResponse>
    * updated.
    * @param data - A data object that contains characteristics and their values.
    */
-  update(data: Partial<Attributes>) {
+  update(data: Record<string | number | symbol, unknown>) {
     const cs = this.characteristics;
     const changed = new Set<CharacteristicName>();
 
@@ -124,6 +123,18 @@ export abstract class Component<Attributes, Config, ConfigResponse>
   }
 
   /**
+   * Shorthand method for making an RPC.
+   */
+  protected rpc<T>(method: string, params?: RpcParams): PromiseLike<T> {
+    return this.device.rpcHandler.request<T>(`${this.name}.${method}`, params);
+  }
+}
+
+/**
+ * Defines a set of methods common for (almost) all device components.
+ */
+export abstract class Component<Attributes, Config, ConfigResponse> extends ComponentBase {
+  /**
    * Retrieves the status of this component.
    */
   getStatus(): PromiseLike<Attributes> {
@@ -145,13 +156,6 @@ export abstract class Component<Attributes, Config, ConfigResponse>
     return this.rpc<ConfigResponse>('SetConfig', {
       config,
     });
-  }
-
-  /**
-   * Shorthand method for making an RPC.
-   */
-  protected rpc<T>(method: string, params?: RpcParams): PromiseLike<T> {
-    return this.device.rpcHandler.request<T>(`${this.name}.${method}`, params);
   }
 }
 
