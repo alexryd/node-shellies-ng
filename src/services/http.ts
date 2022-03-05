@@ -69,8 +69,8 @@ export class HttpService extends Service {
    * @param timeout - Timeout, in seconds.
    * @param ssl_ca - The certificate authority to use for HTTPS requests.
    */
-  request(method: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE', url: string, body?: string, body_b64?: string, headers?: HttpHeaders, timeout?: number,
-    ssl_ca?: '*' | 'user_ca.pem' | '' | null): PromiseLike<HttpResponse> {
+  request(method: 'GET' | 'POST' | 'PUT' | 'HEAD' | 'DELETE', url: string, body?: string, body_b64?: string, headers?: HttpHeaders,
+    timeout?: number, ssl_ca?: '*' | 'user_ca.pem' | '' | null): PromiseLike<HttpResponse> {
     return this.rpc<HttpResponse>('Request', {
       method,
       url,
