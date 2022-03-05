@@ -19,7 +19,7 @@ For the first generation, see [node-shellies](https://github.com/alexryd/node-sh
 
 ## Basic usage example
 
-```
+```typescript
 import {
   Device,
   DeviceId,
