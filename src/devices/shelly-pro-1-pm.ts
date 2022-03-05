@@ -4,6 +4,7 @@ import {
   Cloud,
   Input,
   Mqtt,
+  Script,
   Switch,
   WiFi,
 } from '../components';
@@ -32,6 +33,9 @@ export class ShellyPro1Pm extends Device {
 
   @component('switch:0')
   readonly switch0 = new Switch(this, 0);
+
+  @component()
+  readonly script = new Script(this);
 }
 
 Device.registerClass(ShellyPro1Pm);

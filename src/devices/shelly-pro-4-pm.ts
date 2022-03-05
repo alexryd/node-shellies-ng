@@ -5,6 +5,7 @@ import {
   Ethernet,
   Input,
   Mqtt,
+  Script,
   Switch,
   Ui,
   WiFi,
@@ -52,6 +53,9 @@ export class ShellyPro4Pm extends Device {
 
   @component('switch:3')
   readonly switch3 = new Switch(this, 3);
+
+  @component()
+  readonly script = new Script(this);
 
   @component()
   readonly ui = new Ui(this);

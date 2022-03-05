@@ -4,6 +4,7 @@ import {
   Cloud,
   Input,
   Mqtt,
+  Script,
   WiFi,
 } from '../components';
 
@@ -34,6 +35,9 @@ export class ShellyPlusI4 extends Device {
 
   @component('input:3')
   readonly input3 = new Input(this, 3);
+
+  @component()
+  readonly script = new Script(this);
 }
 
 Device.registerClass(ShellyPlusI4);
