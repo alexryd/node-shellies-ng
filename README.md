@@ -56,3 +56,5 @@ shellies.registerDiscoverer(discoverer);
 // start discovering devices
 discoverer.start();
 ```
+
+See [homebridge-shelly-ng]() for a real-world example.
