@@ -2,6 +2,7 @@ import { component, Device } from './base';
 import {
   BluetoothLowEnergy,
   Cloud,
+  Cover,
   Input,
   Mqtt,
   Script,
@@ -24,6 +25,9 @@ export class ShellyPro2Pm extends Device {
 
   @component()
   readonly mqtt = new Mqtt(this);
+
+  @component('cover:0')
+  readonly cover0 = new Cover(this, 0);
 
   @component('input:0')
   readonly input0 = new Input(this, 0);
