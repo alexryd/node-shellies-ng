@@ -1,4 +1,4 @@
-import { component, Device } from './base';
+import { component, Device, MultiProfileDevice } from './base';
 import {
   BluetoothLowEnergy,
   Cloud,
@@ -10,7 +10,7 @@ import {
   WiFi,
 } from '../components';
 
-export class ShellyPro2Pm extends Device {
+export class ShellyPro2Pm extends MultiProfileDevice {
   static readonly model = 'SPSW-002PE16EU';
   static readonly modelName = 'Shelly Pro 2 PM';
 

@@ -30,6 +30,10 @@ export interface DeviceInfo {
    * Current firmware version.
    */
   ver?: string;
+  /**
+   * Current device profile.
+   */
+  profile?: string;
 }
 
 /**
@@ -268,5 +272,25 @@ export abstract class Device extends EventEmitter {
     for (const event of events.events) {
       this.getComponent(event.component)?.handleEvent(event);
     }
+  }
+}
+
+/**
+ * Base class for devices that have multiple profiles.
+ */
+export abstract class MultiProfileDevice extends Device {
+  /**
+   * The current device profile.
+   */
+  readonly profile: string;
+
+  /**
+   * @param info - Information about this device.
+   * @param rpcHandler - Used to make remote procedure calls.
+   */
+  constructor(info: DeviceInfo, readonly rpcHandler: RpcHandler) {
+    super(info, rpcHandler);
+
+    this.profile = info.profile ?? '';
   }
 }
