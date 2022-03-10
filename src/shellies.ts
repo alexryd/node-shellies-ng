@@ -340,7 +340,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       }
 
       // get the device class for this model
-      const cls = Device.getClass(info.model);
+      const cls = Device.getClass(info.model ?? '');
 
       if (cls === undefined) {
         // abort if we don't have a matching device class
