@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 
-import { ComponentLike, ComponentName, System } from '../components';
+import { Component, ComponentLike, ComponentName, System } from '../components';
 import { HttpService, ScheduleService, ShellyService, WebhookService } from '../services';
 import { RpcEventNotification, RpcHandler, RpcStatusNotification } from '../rpc';
 
@@ -248,6 +248,24 @@ export abstract class Device extends EventEmitter {
     for (const cmpnt in status) {
       if (Object.prototype.hasOwnProperty.call(status, cmpnt) && typeof status[cmpnt] === 'object') {
         this.getComponent(cmpnt)?.update(status[cmpnt] as Record<string, unknown>);
+      }
+    }
+  }
+
+  /**
+   * Loads the condiguration for all of the device's components and populates their `config` properties.
+   */
+  async loadConfig() {
+    // retrieve the config
+    const config = await this.shelly.getConfig();
+
+    // update the components
+    for (const cmpnt in config) {
+      if (Object.prototype.hasOwnProperty.call(config, cmpnt) && typeof config[cmpnt] === 'object') {
+        const c = this.getComponent(cmpnt);
+        if (c && c instanceof Component) {
+          c.config = config[cmpnt];
+        }
       }
     }
   }

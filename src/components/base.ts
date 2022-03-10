@@ -135,6 +135,13 @@ export abstract class ComponentBase extends EventEmitter implements ComponentLik
  */
 export abstract class Component<Attributes, Config, ConfigResponse> extends ComponentBase {
   /**
+   * The confoguration options for this component.
+   * Use the `getConfig()` method to load these options.
+   * This property is automatically populated by the `Device.loadConfig()` method.
+   */
+  config?: Config;
+
+  /**
    * Retrieves the status of this component.
    */
   getStatus(): PromiseLike<Attributes> {
