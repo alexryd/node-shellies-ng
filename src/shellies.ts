@@ -51,6 +51,14 @@ export interface ShelliesOptions {
    */
   websocket?: WebSocketRpcHandlerOptions;
   /**
+   * Whether the status should be loaded automatically for discovered devices.
+   */
+  autoLoadStatus: boolean;
+  /**
+   * Whether the config should be loaded automatically for discovered devices.
+   */
+  autoLoadConfig: boolean;
+  /**
    * Configuration options for devices.
    */
   deviceOptions: Map<DeviceId, Partial<DeviceOptions>> | DeviceOptionsCallback | null;
@@ -60,6 +68,8 @@ export interface ShelliesOptions {
  * Default `Shellies` options.
  */
 const DEFAULT_SHELLIES_OPTIONS: Readonly<ShelliesOptions> = {
+  autoLoadStatus: true,
+  autoLoadConfig: false,
   deviceOptions: null,
 };
 
@@ -351,10 +361,15 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
 
       // create the device
       const device = new cls(info, rpcHandler);
-      // load its status
-      await device.loadStatus();
-      // load its config
-      await device.loadConfig();
+
+      if (this.options.autoLoadStatus === true) {
+        // load its status
+        await device.loadStatus();
+      }
+      if (this.options.autoLoadConfig === true) {
+        // load its config
+        await device.loadConfig();
+      }
 
       this.pendingDevices.delete(deviceId);
 
