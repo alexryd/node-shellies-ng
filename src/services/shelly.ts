@@ -1,7 +1,67 @@
 import crypto from 'crypto';
 
+import {
+  BluetoothLowEnergyAttributes,
+  BluetoothLowEnergyConfig,
+  CloudAttributes,
+  CloudConfig,
+  CoverAttributes,
+  CoverConfig,
+  EthernetAttributes,
+  EthernetConfig,
+  InputAttributes,
+  InputConfig,
+  MqttAttributes,
+  MqttConfig,
+  SwitchAttributes,
+  SwitchConfig,
+  SystemAttributes,
+  SystemConfig,
+  UiAttributes,
+  UiConfig,
+  WiFiAttributes,
+  WiFiConfig,
+} from '../components';
 import { Device } from '../devices';
 import { Service } from './base';
+
+export interface ShellyStatus {
+  sys?: SystemAttributes;
+  wifi?: WiFiAttributes;
+  eth?: EthernetAttributes;
+  ble?: BluetoothLowEnergyAttributes;
+  cloud?: CloudAttributes;
+  mqtt?: MqttAttributes;
+  'cover:0'?: CoverAttributes;
+  'input:0'?: InputAttributes;
+  'input:1'?: InputAttributes;
+  'input:2'?: InputAttributes;
+  'input:3'?: InputAttributes;
+  'switch:0'?: SwitchAttributes;
+  'switch:1'?: SwitchAttributes;
+  'switch:2'?: SwitchAttributes;
+  'switch:3'?: SwitchAttributes;
+  ui?: UiAttributes;
+}
+
+export interface ShellyConfig {
+  sys?: SystemConfig;
+  wifi?: WiFiConfig;
+  eth?: EthernetConfig;
+  ble?: BluetoothLowEnergyConfig;
+  cloud?: CloudConfig;
+  mqtt?: MqttConfig;
+  'cover:0'?: CoverConfig;
+  'input:0'?: InputConfig;
+  'input:1'?: InputConfig;
+  'input:2'?: InputConfig;
+  'input:3'?: InputConfig;
+  'switch:0'?: SwitchConfig;
+  'switch:1'?: SwitchConfig;
+  'switch:2'?: SwitchConfig;
+  'switch:3'?: SwitchConfig;
+  ui?: UiConfig;
+}
 
 export interface ShellyMethods {
   methods: string[];
@@ -67,15 +127,15 @@ export class ShellyService extends Service {
   /**
    * Retrieves the status of all of the components of the device.
    */
-  getStatus(): PromiseLike<Record<string, unknown>> {
-    return this.rpc<Record<string, unknown>>('GetStatus');
+  getStatus(): PromiseLike<ShellyStatus> {
+    return this.rpc<ShellyStatus>('GetStatus');
   }
 
   /**
    * Retrieves the configuration of all the components of the device.
    */
-  getConfig(): PromiseLike<Record<string, unknown>> {
-    return this.rpc<Record<string, unknown>>('GetConfig');
+  getConfig(): PromiseLike<ShellyConfig> {
+    return this.rpc<ShellyConfig>('GetConfig');
   }
 
   /**
