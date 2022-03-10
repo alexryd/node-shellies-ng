@@ -353,6 +353,8 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       const device = new cls(info, rpcHandler);
       // load its status
       await device.loadStatus();
+      // load its config
+      await device.loadConfig();
 
       this.pendingDevices.delete(deviceId);
 
