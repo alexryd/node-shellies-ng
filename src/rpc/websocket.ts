@@ -16,6 +16,11 @@ export interface WebSocketRpcHandlerOptions {
    */
   requestTimeout: number;
   /**
+   * The interval, in milliseconds, at which ping requests should be made to verify that the connection is open.
+   * Set to `0` to disable.
+   */
+  pingInterval: number;
+  /**
    * The password to use if the Shelly device requires authentication.
    */
   password?: string;
@@ -35,11 +40,17 @@ export class WebSocketRpcHandler extends RpcHandler {
   protected readonly client: JSONRPCClientWithAuthentication;
 
   /**
+   * Timeout used to send periodic ping requests.
+   */
+  protected pingTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  /**
    * Event handlers bound to `this`.
    */
   protected readonly openHandler = this.handleOpen.bind(this);
   protected readonly closeHandler = this.handleClose.bind(this);
   protected readonly messageHandler = this.handleMessage.bind(this);
+  protected readonly pongHandler = this.handlePong.bind(this);
   protected readonly errorHandler = this.handleError.bind(this);
 
   /**
@@ -84,6 +95,7 @@ export class WebSocketRpcHandler extends RpcHandler {
       .on('open', this.openHandler)
       .on('close', this.closeHandler)
       .on('message', this.messageHandler)
+      .on('pong', this.pongHandler)
       .on('error', this.errorHandler);
   }
 
@@ -159,6 +171,7 @@ export class WebSocketRpcHandler extends RpcHandler {
       .off('open', this.openHandler)
       .off('close', this.closeHandler)
       .off('message', this.messageHandler)
+      .off('pong', this.pongHandler)
       .off('error', this.errorHandler);
   }
 
@@ -218,10 +231,44 @@ export class WebSocketRpcHandler extends RpcHandler {
   }
 
   /**
+   * Sends a ping over the websocket.
+   */
+  protected sendPing() {
+    // abort if pings are disabled or the socket isn't open
+    if (this.options.pingInterval <= 0 || this.socket.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    // clear the timeout
+    if (this.pingTimeout !== null) {
+      clearTimeout(this.pingTimeout);
+      this.pingTimeout = null;
+    }
+
+    // send the ping
+    this.socket.ping((error?: Error) => {
+      if (error) {
+        this.emit('error', error);
+      }
+    });
+
+    // wait for a pong
+    this.pingTimeout = setTimeout(() => {
+      // no pong received, terminate the connection
+      this.socket.terminate();
+    }, this.options.requestTimeout);
+  }
+
+  /**
    * Handles 'open' events from the socket.
    */
   protected handleOpen() {
     this.emit('connect');
+
+    // start sending pings
+    if (this.pingTimeout === null && this.options.pingInterval > 0) {
+      this.pingTimeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+    }
   }
 
   /**
@@ -230,6 +277,12 @@ export class WebSocketRpcHandler extends RpcHandler {
    * @param reason - A human-readable explanation why the connection was closed.
    */
   protected handleClose(code: number, reason: Buffer) {
+    // clear the ping timeout
+    if (this.pingTimeout !== null) {
+      clearTimeout(this.pingTimeout);
+      this.pingTimeout = null;
+    }
+
     this.emit('disconnect', code, reason.toString());
   }
 
@@ -254,6 +307,22 @@ export class WebSocketRpcHandler extends RpcHandler {
   }
 
   /**
+   * Handles pongs received from the device.
+   */
+  protected handlePong() {
+    // clear the timeout
+    if (this.pingTimeout !== null) {
+      clearTimeout(this.pingTimeout);
+      this.pingTimeout = null;
+    }
+
+    // schedule a new ping
+    if (this.options.pingInterval > 0) {
+      this.pingTimeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+    }
+  }
+
+  /**
    * Handles errors from the websocket.
    * @param error - The error.
    */
@@ -272,6 +341,7 @@ export class WebSocketRpcHandlerFactory {
   readonly defaultOptions: WebSocketRpcHandlerOptions = {
     clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
     requestTimeout: 10 * 1000, // 10 seconds
+    pingInterval: 60 * 1000, // 60 seconds
   };
 
   /**
