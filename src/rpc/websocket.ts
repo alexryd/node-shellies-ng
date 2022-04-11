@@ -21,6 +21,14 @@ export interface WebSocketRpcHandlerOptions {
    */
   pingInterval: number;
   /**
+   * The interval, in milliseconds, at which a connection attempt should be made after a socket has been closed.
+   * If an array is specified, the first value of the array will be used for the first connection attempt, the second
+   * value for the second attempt and so on. When the last item in the array has been reached, it will be used for
+   * all subsequent connection attempts; unless the value is `0`, in which case no more attempts will be made.
+   * Set to `0` or an empty array to disable.
+   */
+  reconnectInterval: number | number[];
+  /**
    * The password to use if the Shelly device requires authentication.
    */
   password?: string;
@@ -34,15 +42,21 @@ export class WebSocketRpcHandler extends RpcHandler {
    * The underlying websocket.
    */
   protected socket: WebSocket;
+
   /**
    * Handles parsing of JSON RPC requests and responses.
    */
   protected readonly client: JSONRPCClientWithAuthentication;
 
   /**
-   * Timeout used to send periodic ping requests.
+   * Timeout used to schedule connection attempts and to send periodic ping requests.
    */
-  protected pingTimeout: ReturnType<typeof setTimeout> | null = null;
+  protected timeout: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Indicates which value in the `reconnectInterval` option is currently being used.
+   */
+  protected reconnectIntervalIndex = 0;
 
   /**
    * Event handlers bound to `this`.
@@ -80,8 +94,12 @@ export class WebSocketRpcHandler extends RpcHandler {
   }
 
   destroy(): PromiseLike<void> {
+    // clear any timeout
+    this.clearTimeout();
+
     // reject all pending requests
     this.client.rejectAllPendingRequests('Connection closed');
+
     // disconnect the socket
     return this.disconnect();
   }
@@ -149,30 +167,59 @@ export class WebSocketRpcHandler extends RpcHandler {
   }
 
   /**
+   * Schedules a connection attempt after a time period specified by the `reconnectInterval` configuration option.
+   */
+  protected scheduleConnect() {
+    const reconnectInterval = this.options.reconnectInterval;
+    const intervals: number[] = !Array.isArray(reconnectInterval) ? [reconnectInterval] : reconnectInterval;
+
+    // abort if no interval has been specified
+    if (intervals.length === 0) {
+      return;
+    }
+
+    // get the current interval
+    const interval = intervals[this.reconnectIntervalIndex];
+
+    // abort if the interval is a non-positive number
+    if (interval <= 0) {
+      return;
+    }
+
+    // clear any timeout
+    this.clearTimeout();
+
+    // schedule a new connection attempt
+    this.timeout = setTimeout(async () => {
+      this.timeout = null;
+
+      if (this.reconnectIntervalIndex < intervals.length - 1) {
+        this.reconnectIntervalIndex++;
+      }
+
+      try {
+        await this.connect();
+      } catch (e) {
+        this.emit('error', e as Error);
+      }
+    }, interval);
+  }
+
+  /**
    * Disconnects the socket and unregisters event handlers.
    */
   protected async disconnect() {
-    const s = this.socket;
-
     switch (this.socket.readyState) {
       case WebSocket.OPEN:
       case WebSocket.CONNECTING:
         // close the socket
-        s.close(1000, 'User request');
+        this.socket.close(1000, 'User request');
         // fall through
 
       case WebSocket.CLOSING:
         // wait for the socket to be closed
         await this.awaitDisconnect();
     }
-
-    // remove event handlers
-    s
-      .off('open', this.openHandler)
-      .off('close', this.closeHandler)
-      .off('message', this.messageHandler)
-      .off('pong', this.pongHandler)
-      .off('error', this.errorHandler);
   }
 
   /**
@@ -240,10 +287,7 @@ export class WebSocketRpcHandler extends RpcHandler {
     }
 
     // clear the timeout
-    if (this.pingTimeout !== null) {
-      clearTimeout(this.pingTimeout);
-      this.pingTimeout = null;
-    }
+    this.clearTimeout();
 
     // send the ping
     this.socket.ping((error?: Error) => {
@@ -253,21 +297,37 @@ export class WebSocketRpcHandler extends RpcHandler {
     });
 
     // wait for a pong
-    this.pingTimeout = setTimeout(() => {
+    this.timeout = setTimeout(() => {
       // no pong received, terminate the connection
       this.socket.terminate();
     }, this.options.requestTimeout);
   }
 
   /**
+   * Clears any currently pending timeout.
+   */
+  protected clearTimeout() {
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  }
+
+  /**
    * Handles 'open' events from the socket.
    */
   protected handleOpen() {
+    // reset the reconnect index
+    this.reconnectIntervalIndex = 0;
+
     this.emit('connect');
 
+    // clear any timeout
+    this.clearTimeout();
+
     // start sending pings
-    if (this.pingTimeout === null && this.options.pingInterval > 0) {
-      this.pingTimeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+    if (this.options.pingInterval > 0) {
+      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
     }
   }
 
@@ -277,13 +337,24 @@ export class WebSocketRpcHandler extends RpcHandler {
    * @param reason - A human-readable explanation why the connection was closed.
    */
   protected handleClose(code: number, reason: Buffer) {
-    // clear the ping timeout
-    if (this.pingTimeout !== null) {
-      clearTimeout(this.pingTimeout);
-      this.pingTimeout = null;
-    }
+    // clear any timeout
+    this.clearTimeout();
+
+    // remove event handlers
+    this.socket
+      .off('open', this.openHandler)
+      .off('close', this.closeHandler)
+      .off('message', this.messageHandler)
+      .off('pong', this.pongHandler)
+      .off('error', this.errorHandler);
 
     this.emit('disconnect', code, reason.toString());
+
+    // unless this was an intentional disconnect...
+    if (code !== 1000) {
+      // try to reconnect
+      this.scheduleConnect();
+    }
   }
 
   /**
@@ -311,14 +382,11 @@ export class WebSocketRpcHandler extends RpcHandler {
    */
   protected handlePong() {
     // clear the timeout
-    if (this.pingTimeout !== null) {
-      clearTimeout(this.pingTimeout);
-      this.pingTimeout = null;
-    }
+    this.clearTimeout();
 
     // schedule a new ping
     if (this.options.pingInterval > 0) {
-      this.pingTimeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
     }
   }
 
@@ -342,6 +410,14 @@ export class WebSocketRpcHandlerFactory {
     clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
     requestTimeout: 10 * 1000, // 10 seconds
     pingInterval: 60 * 1000, // 60 seconds
+    reconnectInterval: [
+      5 * 1000, // 5 seconds
+      10 * 1000, // 10 seconds
+      30 * 1000, // 30 seconds
+      60 * 1000, // 60 seconds
+      5 * 60 * 1000, // 5 minutes
+      10 * 60 * 1000, // 10 minutes
+    ],
   };
 
   /**
