@@ -168,14 +168,15 @@ export class WebSocketRpcHandler extends RpcHandler {
 
   /**
    * Schedules a connection attempt after a time period specified by the `reconnectInterval` configuration option.
+   * @return The time, in milliseconds, that the next connection attempt will be made in; or `null` if none has been scheduled.
    */
-  protected scheduleConnect() {
+  protected scheduleConnect(): number | null {
     const reconnectInterval = this.options.reconnectInterval;
     const intervals: number[] = !Array.isArray(reconnectInterval) ? [reconnectInterval] : reconnectInterval;
 
     // abort if no interval has been specified
     if (intervals.length === 0) {
-      return;
+      return null;
     }
 
     // get the current interval
@@ -183,7 +184,7 @@ export class WebSocketRpcHandler extends RpcHandler {
 
     // abort if the interval is a non-positive number
     if (interval <= 0) {
-      return;
+      return null;
     }
 
     // clear any timeout
@@ -203,6 +204,8 @@ export class WebSocketRpcHandler extends RpcHandler {
         this.emit('error', e as Error);
       }
     }, interval);
+
+    return interval;
   }
 
   /**
@@ -348,13 +351,15 @@ export class WebSocketRpcHandler extends RpcHandler {
       .off('pong', this.pongHandler)
       .off('error', this.errorHandler);
 
-    this.emit('disconnect', code, reason.toString());
+    let reconnectIn: number | null = null;
 
     // unless this was an intentional disconnect...
     if (code !== 1000) {
       // try to reconnect
-      this.scheduleConnect();
+      reconnectIn = this.scheduleConnect();
     }
+
+    this.emit('disconnect', code, reason.toString(), reconnectIn);
   }
 
   /**

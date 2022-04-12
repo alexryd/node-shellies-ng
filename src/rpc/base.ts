@@ -59,9 +59,9 @@ type RpcHandlerEvents = {
    */
   connect: () => void;
   /**
-   * The 'disconnect' event is emitted when a connection has been closed.
+   * The 'disconnect' event is emitted when a connection has been closed or an attempt to connect fails.
    */
-  disconnect: (code: number, reason: string) => void;
+  disconnect: (code: number, reason: string, reconnectIn: number | null) => void;
   /**
    * The 'request' event is emitted when a new request is about to be sent.
    */
