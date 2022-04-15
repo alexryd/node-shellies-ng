@@ -12,16 +12,16 @@ export interface WebSocketRpcHandlerOptions {
    */
   clientId: string;
   /**
-   * The time, in milliseconds, to wait for a response before a request is aborted.
+   * The time, in seconds, to wait for a response before a request is aborted.
    */
   requestTimeout: number;
   /**
-   * The interval, in milliseconds, at which ping requests should be made to verify that the connection is open.
+   * The interval, in seconds, at which ping requests should be made to verify that the connection is open.
    * Set to `0` to disable.
    */
   pingInterval: number;
   /**
-   * The interval, in milliseconds, at which a connection attempt should be made after a socket has been closed.
+   * The interval, in seconds, at which a connection attempt should be made after a socket has been closed.
    * If an array is specified, the first value of the array will be used for the first connection attempt, the second
    * value for the second attempt and so on. When the last item in the array has been reached, it will be used for
    * all subsequent connection attempts; unless the value is `0`, in which case no more attempts will be made.
@@ -89,7 +89,7 @@ export class WebSocketRpcHandler extends RpcHandler {
     this.emit('request', method, params);
 
     return this.client
-      .timeout(this.options.requestTimeout)
+      .timeout(this.options.requestTimeout * 1000)
       .request(method, params);
   }
 
@@ -180,7 +180,7 @@ export class WebSocketRpcHandler extends RpcHandler {
     }
 
     // get the current interval
-    const interval = intervals[this.reconnectIntervalIndex];
+    const interval = intervals[this.reconnectIntervalIndex] * 1000;
 
     // abort if the interval is a non-positive number
     if (interval <= 0) {
@@ -303,7 +303,7 @@ export class WebSocketRpcHandler extends RpcHandler {
     this.timeout = setTimeout(() => {
       // no pong received, terminate the connection
       this.socket.terminate();
-    }, this.options.requestTimeout);
+    }, this.options.requestTimeout * 1000);
   }
 
   /**
@@ -330,7 +330,7 @@ export class WebSocketRpcHandler extends RpcHandler {
 
     // start sending pings
     if (this.options.pingInterval > 0) {
-      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval * 1000);
     }
   }
 
@@ -391,7 +391,7 @@ export class WebSocketRpcHandler extends RpcHandler {
 
     // schedule a new ping
     if (this.options.pingInterval > 0) {
-      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval);
+      this.timeout = setTimeout(() => this.sendPing(), this.options.pingInterval * 1000);
     }
   }
 
@@ -413,15 +413,15 @@ export class WebSocketRpcHandlerFactory {
    */
   readonly defaultOptions: WebSocketRpcHandlerOptions = {
     clientId: 'node-shellies-ng-' + Math.round(Math.random() * 1000000),
-    requestTimeout: 10 * 1000, // 10 seconds
-    pingInterval: 60 * 1000, // 60 seconds
+    requestTimeout: 10,
+    pingInterval: 60,
     reconnectInterval: [
-      5 * 1000, // 5 seconds
-      10 * 1000, // 10 seconds
-      30 * 1000, // 30 seconds
-      60 * 1000, // 60 seconds
-      5 * 60 * 1000, // 5 minutes
-      10 * 60 * 1000, // 10 minutes
+      5,
+      10,
+      30,
+      60,
+      5 * 60, // 5 minutes
+      10 * 60, // 10 minutes
     ],
   };
 
