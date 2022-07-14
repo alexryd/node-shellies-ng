@@ -1,8 +1,17 @@
 import { Device } from '../devices';
 import { Service } from './base';
 
+export interface WebhookEventType {
+  attrs?: Array<{
+    name: string;
+    type: 'boolean' | 'number' | 'string';
+    desc: string;
+  }>;
+}
+
 export interface WebhookSupportedResponse {
-  hook_types: string[];
+  hook_types?: string[];
+  types?: { [name: string]: WebhookEventType };
 }
 
 export interface Webhook {
@@ -14,14 +23,25 @@ export interface Webhook {
   ssl_ca?: '*' | 'user_ca.pem' | '' | null;
   urls: string[];
   active_between?: string[] | null;
+  condition?: string | null;
 }
 
 export interface WebhookListResponse {
   hooks: Webhook[];
+  rev: number;
 }
 
 export interface WebhookCreateResponse {
   id: number;
+  rev: number;
+}
+
+export interface WebhookUpdateResponse {
+  rev: number;
+}
+
+export interface WebhookDeleteResponse {
+  rev: number;
 }
 
 /**
@@ -61,8 +81,8 @@ export class WebhookService extends Service {
    * Updates an existing webhook.
    * @param hook - The webhook to update.
    */
-  update(hook: Partial<Webhook>): PromiseLike<null> {
-    return this.rpc<null>(
+  update(hook: Partial<Webhook>): PromiseLike<WebhookUpdateResponse> {
+    return this.rpc<WebhookUpdateResponse>(
       'Update',
       { ...hook },
     );
@@ -72,8 +92,8 @@ export class WebhookService extends Service {
    * Deletes a webhook.
    * @param id - ID of the webhook to delete.
    */
-  delete(id: number): PromiseLike<null> {
-    return this.rpc<null>('Delete', {
+  delete(id: number): PromiseLike<WebhookDeleteResponse> {
+    return this.rpc<WebhookDeleteResponse>('Delete', {
       id,
     });
   }
@@ -81,7 +101,7 @@ export class WebhookService extends Service {
   /**
    * Deletes all existing webhooks.
    */
-  deleteAll(): PromiseLike<null> {
-    return this.rpc<null>('DeleteAll');
+  deleteAll(): PromiseLike<WebhookDeleteResponse> {
+    return this.rpc<WebhookDeleteResponse>('DeleteAll');
   }
 }
