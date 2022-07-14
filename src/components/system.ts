@@ -11,6 +11,11 @@ export interface SystemFirmwareUpdate {
   };
 }
 
+export interface SystemWakeupReason {
+  boot: 'poweron' | 'software_restart' | 'deepsleep_wake' | 'internal' | 'unknown';
+  cause: 'button' | 'usb' | 'periodic' | 'status_update' | 'undefined';
+}
+
 export interface SystemAttributes {
   mac: string;
   restart_required: boolean;
@@ -22,7 +27,11 @@ export interface SystemAttributes {
   fs_size: number;
   fs_free: number;
   cfg_rev: number;
+  kvs_rev: number;
+  schedule_rev?: number;
+  webhook_rev?: number;
   available_updates: SystemFirmwareUpdate;
+  wakeup_reason?: SystemWakeupReason;
 }
 
 export interface SystemConfig {
@@ -32,6 +41,7 @@ export interface SystemConfig {
     mac: string;
     fw_id: string;
     profile?: string;
+    discoverable: boolean;
   };
   location: {
     tz: string | null;
@@ -56,6 +66,9 @@ export interface SystemConfig {
   };
   sntp: {
     server: string;
+  };
+  sleep?: {
+    wakeup_period: number;
   };
   cfg_rev: number;
 }
@@ -129,10 +142,34 @@ export class System extends Component<SystemAttributes, SystemConfig, SystemConf
   readonly cfg_rev: number = 0;
 
   /**
+   * KVS (Key-Value Store) revision number.
+   */
+  @characteristic()
+  readonly kvs_rev: number = 0;
+
+  /**
+   * Schedule revision number (present if schedules are enabled).
+   */
+  @characteristic()
+  readonly schedule_rev: number | undefined;
+
+  /**
+   * Webhook revision number (present if schedules are enabled).
+   */
+  @characteristic()
+  readonly webhook_rev: number | undefined;
+
+  /**
    * Available firmware updates, if any.
    */
   @characteristic()
   readonly available_updates: SystemFirmwareUpdate = {};
+
+  /**
+   * Information about boot type and cause (only for battery-operated devices).
+   */
+  @characteristic()
+  readonly wakeup_reason: SystemWakeupReason | undefined;
 
   constructor(device: Device) {
     super('Sys', device);
@@ -154,6 +191,10 @@ export class System extends Component<SystemAttributes, SystemConfig, SystemConf
 
       case 'ota_error':
         this.emit('otaError', event.msg);
+        break;
+
+      case 'sleep':
+        this.emit('sleep');
         break;
 
       default:
