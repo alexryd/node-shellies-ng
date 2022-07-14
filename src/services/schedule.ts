@@ -15,10 +15,20 @@ export interface ScheduleJob {
 
 export interface ScheduleListResponse {
   jobs: ScheduleJob[];
+  rev: number;
 }
 
 export interface ScheduleCreateResponse {
   id: number;
+  rev: number;
+}
+
+export interface ScheduleUpdateResponse {
+  rev: number;
+}
+
+export interface ScheduleDeleteResponse {
+  rev: number;
 }
 
 /**
@@ -51,8 +61,8 @@ export class ScheduleService extends Service {
    * Updates an existing scheduled job.
    * @param job - The job to update.
    */
-  update(job: Partial<ScheduleJob>): PromiseLike<null> {
-    return this.rpc<null>(
+  update(job: Partial<ScheduleJob>): PromiseLike<ScheduleUpdateResponse> {
+    return this.rpc<ScheduleUpdateResponse>(
       'Update',
       { ...job },
     );
@@ -62,8 +72,8 @@ export class ScheduleService extends Service {
    * Deletes a scheduled job.
    * @param id - ID of the job to delete.
    */
-  delete(id: number): PromiseLike<null> {
-    return this.rpc<null>('Delete', {
+  delete(id: number): PromiseLike<ScheduleDeleteResponse> {
+    return this.rpc<ScheduleDeleteResponse>('Delete', {
       id,
     });
   }
@@ -71,7 +81,7 @@ export class ScheduleService extends Service {
   /**
    * Deletes all existing scheduled jobs.
    */
-  deleteAll(): PromiseLike<null> {
-    return this.rpc<null>('DeleteAll');
+  deleteAll(): PromiseLike<ScheduleDeleteResponse> {
+    return this.rpc<ScheduleDeleteResponse>('DeleteAll');
   }
 }
