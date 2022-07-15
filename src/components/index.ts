@@ -2,6 +2,7 @@ export * from './base';
 export * from './bluetooth-low-energy';
 export * from './cloud';
 export * from './cover';
+export * from './device-power';
 export * from './ethernet';
 export * from './input';
 export * from './light';
