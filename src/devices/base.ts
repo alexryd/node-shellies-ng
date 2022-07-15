@@ -1,7 +1,13 @@
 import EventEmitter from 'eventemitter3';
 
 import { Component, ComponentLike, ComponentName, System } from '../components';
-import { HttpService, ScheduleService, ShellyService, WebhookService } from '../services';
+import {
+  HttpService,
+  KvsService,
+  ScheduleService,
+  ShellyService,
+  WebhookService,
+} from '../services';
 import { RpcEventNotification, RpcHandler, RpcStatusNotification } from '../rpc';
 
 export type DeviceId = string;
@@ -152,6 +158,11 @@ export abstract class Device extends EventEmitter {
    * This device's HTTP service.
    */
   readonly http = new HttpService(this);
+
+  /**
+   * This device's KVS service.
+   */
+  readonly kvs = new KvsService(this);
 
   @component('sys')
   readonly system = new System(this);
