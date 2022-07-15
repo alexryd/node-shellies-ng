@@ -4,9 +4,11 @@ import { Device } from '../devices';
 export interface ScriptAttributes {
   id: number;
   running: boolean;
+  errors?: string[];
 }
 
 export interface ScriptConfig {
+  id: number;
   name: string;
   enable: boolean;
 }
