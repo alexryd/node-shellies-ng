@@ -32,6 +32,6 @@ export class Mqtt extends Component<MqttAttributes, MqttConfig, MqttConfigRespon
   readonly connected: boolean = false;
 
   constructor(device: Device) {
-    super('Mqtt', device);
+    super('MQTT', device);
   }
 }
