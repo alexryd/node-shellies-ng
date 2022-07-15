@@ -4,6 +4,7 @@ export * from './cloud';
 export * from './cover';
 export * from './ethernet';
 export * from './input';
+export * from './light';
 export * from './mqtt';
 export * from './outbound-websocket';
 export * from './script';
