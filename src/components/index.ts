@@ -5,6 +5,7 @@ export * from './cover';
 export * from './ethernet';
 export * from './input';
 export * from './mqtt';
+export * from './outbound-websocket';
 export * from './script';
 export * from './switch';
 export * from './system';

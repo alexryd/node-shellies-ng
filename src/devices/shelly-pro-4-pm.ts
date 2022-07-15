@@ -5,6 +5,7 @@ import {
   Ethernet,
   Input,
   Mqtt,
+  OutboundWebSocket,
   Script,
   Switch,
   Ui,
@@ -29,6 +30,9 @@ export class ShellyPro4Pm extends Device {
 
   @component()
   readonly mqtt = new Mqtt(this);
+
+  @component('ws')
+  readonly outboundWebSocket = new OutboundWebSocket(this);
 
   @component('input:0')
   readonly input0 = new Input(this, 0);

@@ -5,6 +5,7 @@ import {
   Cover,
   Input,
   Mqtt,
+  OutboundWebSocket,
   Script,
   Switch,
   WiFi,
@@ -25,6 +26,9 @@ export class ShellyPlus2Pm extends MultiProfileDevice {
 
   @component()
   readonly mqtt = new Mqtt(this);
+
+  @component('ws')
+  readonly outboundWebSocket = new OutboundWebSocket(this);
 
   @component('cover:0')
   readonly cover0 = new Cover(this, 0);

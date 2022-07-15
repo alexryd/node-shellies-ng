@@ -4,6 +4,7 @@ import {
   Cloud,
   Input,
   Mqtt,
+  OutboundWebSocket,
   Script,
   WiFi,
 } from '../components';
@@ -23,6 +24,9 @@ export class ShellyPlusI4 extends Device {
 
   @component()
   readonly mqtt = new Mqtt(this);
+
+  @component('ws')
+  readonly outboundWebSocket = new OutboundWebSocket(this);
 
   @component('input:0')
   readonly input0 = new Input(this, 0);
