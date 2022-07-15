@@ -73,14 +73,10 @@ export interface SystemConfig {
   cfg_rev: number;
 }
 
-export interface SystemConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles the system services of a device.
  */
-export class System extends Component<SystemAttributes, SystemConfig, SystemConfigResponse> implements SystemAttributes {
+export class System extends Component<SystemAttributes, SystemConfig> implements SystemAttributes {
   /**
    * MAC address of the device.
    */

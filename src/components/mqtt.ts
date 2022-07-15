@@ -17,14 +17,10 @@ export interface MqttConfig {
   status_ntf: boolean;
 }
 
-export interface MqttConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles configuration and status of the device's outbound MQTT connection.
  */
-export class Mqtt extends Component<MqttAttributes, MqttConfig, MqttConfigResponse> implements MqttAttributes {
+export class Mqtt extends Component<MqttAttributes, MqttConfig> implements MqttAttributes {
   /**
    * Whether the device is connected to an MQTT server.
    */

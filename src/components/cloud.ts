@@ -10,14 +10,10 @@ export interface CloudConfig {
   server: string | null;
 }
 
-export interface CloudConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles the Cloud services of a device.
  */
-export class Cloud extends Component<CloudAttributes, CloudConfig, CloudConfigResponse> implements CloudAttributes {
+export class Cloud extends Component<CloudAttributes, CloudConfig> implements CloudAttributes {
   /**
    * Whether the device is connected to the Shelly cloud.
    */

@@ -39,10 +39,6 @@ export interface WiFiConfig {
   };
 }
 
-export interface WiFiConfigResponse {
-  restart_required: boolean;
-}
-
 export interface WiFiScanResponse {
   results: Array<{
     ssid: string | null;
@@ -67,7 +63,7 @@ export interface WiFiListApClientsResponse {
 /**
  * Handles the WiFi services of a device.
  */
-export class WiFi extends Component<WiFiAttributes, WiFiConfig, WiFiConfigResponse> implements WiFiAttributes {
+export class WiFi extends Component<WiFiAttributes, WiFiConfig> implements WiFiAttributes {
   /**
    * IP address of the device.
    */

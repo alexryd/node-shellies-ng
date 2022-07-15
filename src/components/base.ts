@@ -131,9 +131,16 @@ export abstract class ComponentBase extends EventEmitter implements ComponentLik
 }
 
 /**
+ * Defines the default response from a component's SetConfig RPC method.
+ */
+export interface DefaultConfigResponse {
+  restart_required: boolean;
+}
+
+/**
  * Defines a set of methods common for (almost) all device components.
  */
-export abstract class Component<Attributes, Config, ConfigResponse> extends ComponentBase {
+export abstract class Component<Attributes, Config, ConfigResponse = DefaultConfigResponse> extends ComponentBase {
   /**
    * The confoguration options for this component.
    * Use the `getConfig()` method to load these options.
@@ -169,7 +176,7 @@ export abstract class Component<Attributes, Config, ConfigResponse> extends Comp
 /**
  * Base class for components with an ID.
  */
-export abstract class ComponentWithId<Attributes, Config, ConfigResponse>
+export abstract class ComponentWithId<Attributes, Config, ConfigResponse = DefaultConfigResponse>
   extends Component<Attributes, Config, ConfigResponse> {
   /**
    * @param name - The name of this component. Used when making RPCs.

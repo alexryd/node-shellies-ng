@@ -42,10 +42,6 @@ export interface SwitchConfig {
   current_limit?: number | null;
 }
 
-export interface SwitchConfigResponse {
-  restart_required: boolean;
-}
-
 export interface SwitchSetResponse {
   was_on: boolean;
 }
@@ -53,7 +49,7 @@ export interface SwitchSetResponse {
 /**
  * Represents a switch (relay) of a device.
  */
-export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig, SwitchConfigResponse> implements SwitchAttributes {
+export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig> implements SwitchAttributes {
   /**
    * Source of the last command.
    */

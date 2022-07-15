@@ -66,14 +66,10 @@ export interface CoverConfig {
   safety_switch?: CoverSafetySwitchConfig;
 }
 
-export interface CoverConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles the operation of moorized garage doors, window blinds, roof skylights etc.
  */
-export class Cover extends ComponentWithId<CoverAttributes, CoverConfig, CoverConfigResponse> implements CoverAttributes {
+export class Cover extends ComponentWithId<CoverAttributes, CoverConfig> implements CoverAttributes {
   /**
    * Source of the last command.
    */

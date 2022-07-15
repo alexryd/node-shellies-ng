@@ -14,14 +14,10 @@ export interface EthernetConfig {
   nameserver: string | null;
 }
 
-export interface EthernetConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles the Ethernet services of a device.
  */
-export class Ethernet extends Component<EthernetAttributes, EthernetConfig, EthernetConfigResponse> implements EthernetAttributes {
+export class Ethernet extends Component<EthernetAttributes, EthernetConfig> implements EthernetAttributes {
   /**
    * IP address of the device.
    */

@@ -15,14 +15,10 @@ export interface InputConfig {
   factory_reset?: boolean;
 }
 
-export interface InputConfigResponse {
-  restart_required: boolean;
-}
-
 /**
  * Handles the input of a device.
  */
-export class Input extends ComponentWithId<InputAttributes, InputConfig, InputConfigResponse> implements InputAttributes {
+export class Input extends ComponentWithId<InputAttributes, InputConfig> implements InputAttributes {
   /**
    * State of the input (null if stateless).
    */
