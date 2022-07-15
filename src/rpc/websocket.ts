@@ -373,7 +373,7 @@ export class WebSocketRpcHandler extends RpcHandler {
     if (d.id) {
       // this is a response, let the JSON RPC client handle it
       this.client.receive(d);
-    } else if (d.method === 'NotifyStatus') {
+    } else if (d.method === 'NotifyStatus' || d.method === 'NotifyFullStatus') {
       // this is a status update
       this.emit('statusUpdate', d.params);
     } else if (d.method === 'NotifyEvent') {
