@@ -12,5 +12,6 @@ export * from './outbound-websocket';
 export * from './script';
 export * from './switch';
 export * from './system';
+export * from './temperature';
 export * from './ui';
 export * from './wifi';
