@@ -7,16 +7,26 @@ import {
   CloudConfig,
   CoverAttributes,
   CoverConfig,
+  DevicePowerAttributes,
+  DevicePowerConfig,
   EthernetAttributes,
   EthernetConfig,
+  HumidityAttributes,
+  HumidityConfig,
   InputAttributes,
   InputConfig,
+  LightAttributes,
+  LightConfig,
   MqttAttributes,
   MqttConfig,
+  OutboundWebSocketAttributes,
+  OutboundWebSocketConfig,
   SwitchAttributes,
   SwitchConfig,
   SystemAttributes,
   SystemConfig,
+  TemperatureAttributes,
+  TemperatureConfig,
   UiAttributes,
   UiConfig,
   WiFiAttributes,
@@ -32,6 +42,7 @@ export interface ShellyStatus {
   ble?: BluetoothLowEnergyAttributes;
   cloud?: CloudAttributes;
   mqtt?: MqttAttributes;
+  ws?: OutboundWebSocketAttributes;
   'cover:0'?: CoverAttributes;
   'input:0'?: InputAttributes;
   'input:1'?: InputAttributes;
@@ -41,6 +52,10 @@ export interface ShellyStatus {
   'switch:1'?: SwitchAttributes;
   'switch:2'?: SwitchAttributes;
   'switch:3'?: SwitchAttributes;
+  'light:0'?: LightAttributes;
+  'devicepower:0'?: DevicePowerAttributes;
+  'humidity:0'?: HumidityAttributes;
+  'temperature:0'?: TemperatureAttributes;
   ui?: UiAttributes;
 }
 
@@ -51,6 +66,7 @@ export interface ShellyConfig {
   ble?: BluetoothLowEnergyConfig;
   cloud?: CloudConfig;
   mqtt?: MqttConfig;
+  ws?: OutboundWebSocketConfig;
   'cover:0'?: CoverConfig;
   'input:0'?: InputConfig;
   'input:1'?: InputConfig;
@@ -60,6 +76,10 @@ export interface ShellyConfig {
   'switch:1'?: SwitchConfig;
   'switch:2'?: SwitchConfig;
   'switch:3'?: SwitchConfig;
+  'light:0'?: LightConfig;
+  'devicepower:0'?: DevicePowerConfig;
+  'humidity:0'?: HumidityConfig;
+  'temperature:0'?: TemperatureConfig;
   ui?: UiConfig;
 }
 
@@ -78,6 +98,10 @@ export interface ShellyDeviceInfo {
   profile?: string;
   auth_en: boolean;
   auth_domain: string | null;
+  discoverable: boolean;
+  key?: string;
+  batch?: string;
+  fw_sbits?: string;
 }
 
 export interface ShellyProfiles {
@@ -116,6 +140,10 @@ export interface ShellyFirmwareUpdate {
   };
 }
 
+export interface ShellyPutUserCaResponse {
+  len: number;
+}
+
 /**
  * The common Shelly service that all devices have.
  */
@@ -148,8 +176,10 @@ export class ShellyService extends Service {
   /**
    * Retrieves information about the device.
    */
-  getDeviceInfo(): PromiseLike<ShellyDeviceInfo> {
-    return this.rpc<ShellyDeviceInfo>('GetDeviceInfo');
+  getDeviceInfo(ident?: boolean): PromiseLike<ShellyDeviceInfo> {
+    return this.rpc<ShellyDeviceInfo>('GetDeviceInfo', {
+      ident,
+    });
   }
 
   /**
@@ -250,8 +280,8 @@ export class ShellyService extends Service {
    * @param data - Contents of the PEM file (`null` to remove the existing file).
    * @param append - Whether more data will be appended in a subsequent call.
    */
-  putUserCa(data: string | null, append: boolean): PromiseLike<null> {
-    return this.rpc<null>('PutUserCA', {
+  putUserCa(data: string | null, append: boolean): PromiseLike<ShellyPutUserCaResponse> {
+    return this.rpc<ShellyPutUserCaResponse>('PutUserCA', {
       data,
       append,
     });
