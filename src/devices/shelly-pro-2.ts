@@ -14,34 +14,34 @@ export class ShellyPro2 extends Device {
   static readonly model = 'SPSW-002XE16EU';
   static readonly modelName = 'Shelly Pro 2';
 
-  @component()
+  @component
   readonly wifi = new WiFi(this);
 
-  @component('ble')
+  @component
   readonly bluetoothLowEnergy = new BluetoothLowEnergy(this);
 
-  @component()
+  @component
   readonly cloud = new Cloud(this);
 
-  @component()
+  @component
   readonly mqtt = new Mqtt(this);
 
-  @component('ws')
+  @component
   readonly outboundWebSocket = new OutboundWebSocket(this);
 
-  @component('input:0')
+  @component
   readonly input0 = new Input(this, 0);
 
-  @component('input:1')
+  @component
   readonly input1 = new Input(this, 1);
 
-  @component('switch:0')
+  @component
   readonly switch0 = new Switch(this, 0);
 
-  @component('switch:1')
+  @component
   readonly switch1 = new Switch(this, 1);
 
-  @component()
+  @component
   readonly script = new Script(this);
 }
 

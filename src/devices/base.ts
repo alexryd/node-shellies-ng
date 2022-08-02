@@ -73,22 +73,22 @@ export interface DeviceClass {
 }
 
 /**
- * Prototype decorator used to label properties as components.
- * @param name - The name of the component. If omitted, the property key will be
- * used as the name.
+ * Property decorator used to label properties as components.
+ * @param target - The prototype of the device class that the property belongs to.
+ * @param propertyName - The name of the property.
  */
-export const component = (name: ComponentName | null = null) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (target: any, propertyKey: string) => {
-    // get or create a map of device components
-    let componentMap: Map<ComponentName, string> = target['_componentMap'];
-    if (!componentMap) {
-      target['_componentMap'] = componentMap = new Map<ComponentName, string>();
-    }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const component = (target: any, propertyName: string) => {
+  // make sure the given prototype has an array of properties
+  if (!Object.prototype.hasOwnProperty.call(target, '_componentProps')) {
+    target._componentProps = new Array<string>();
+  }
 
-    // add this component to the map
-    componentMap.set(name || propertyKey, propertyKey);
-  };
+  // get the array of properties
+  const props: string[] = target._componentProps;
+
+  // add this property to the array
+  props.push(propertyName);
 };
 
 /**
@@ -164,7 +164,7 @@ export abstract class Device extends EventEmitter {
    */
   readonly kvs = new KvsService(this);
 
-  @component('sys')
+  @component
   readonly system = new System(this);
 
   /**
@@ -181,11 +181,6 @@ export abstract class Device extends EventEmitter {
       version: info.ver,
     };
     this._model = info.model;
-
-    // make sure we have a map of components, even if we don't have any components
-    if (!this['_componentMap']) {
-      this['_componentMap'] = new Map<ComponentName, string>();
-    }
 
     // handle status updates
     rpcHandler.on('statusUpdate', this.statusUpdateHandler, this);
@@ -210,29 +205,58 @@ export abstract class Device extends EventEmitter {
     return (this.constructor as DeviceClass).modelName;
   }
 
+  private _components: Map<string, string> | null = null;
+
   /**
-   * Maps component names to property keys.
+   * Maps component keys to property names.
    */
-  protected get components(): Map<ComponentName, string> {
-    return this['_componentMap'];
+  protected get components(): Map<string, string> {
+    if (this._components === null) {
+      this._components = new Map();
+
+      // construct an array of properties stored by the @component property decorator
+      const props = new Array<string>();
+      let proto = Object.getPrototypeOf(this);
+
+      // traverse the prototype chain and collect all properties
+      while (proto !== null) {
+        if (Object.prototype.hasOwnProperty.call(proto, '_componentProps')) {
+          props.push(...proto._componentProps);
+        }
+
+        proto = Object.getPrototypeOf(proto);
+      }
+
+      // map each component's key to its property name
+      for (const p of props) {
+        const cmpnt: ComponentLike = this[p];
+        if (!cmpnt) {
+          continue;
+        }
+
+        this._components.set(cmpnt.key, p);
+      }
+    }
+
+    return this._components;
   }
 
   /**
-   * Determines whether this device has a component with a given name.
-   * @param name - The name of the component.
+   * Determines whether this device has a component with a given key.
+   * @param key - The component key.
    */
-  hasComponent(name: ComponentName): boolean {
-    return this.components.has(name);
+  hasComponent(key: string): boolean {
+    return this.components.has(key);
   }
 
   /**
-   * Returns the component with the given name.
-   * @param name - The name of the component.
+   * Returns the component with the given key.
+   * @param key - The component key.
    */
-  getComponent(name: ComponentName): ComponentLike | undefined {
-    const key = this.components.get(name);
-    if (key) {
-      return this[key];
+  getComponent(key: string): ComponentLike | undefined {
+    const prop = this.components.get(key);
+    if (prop) {
+      return this[prop];
     }
 
     return undefined;

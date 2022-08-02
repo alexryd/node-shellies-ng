@@ -16,52 +16,52 @@ export class ShellyPro4Pm extends Device {
   static readonly model = 'SPSW-004PE16EU';
   static readonly modelName = 'Shelly Pro 4 PM';
 
-  @component()
+  @component
   readonly wifi = new WiFi(this);
 
-  @component('eth')
+  @component
   readonly ethernet = new Ethernet(this);
 
-  @component('ble')
+  @component
   readonly bluetoothLowEnergy = new BluetoothLowEnergy(this);
 
-  @component()
+  @component
   readonly cloud = new Cloud(this);
 
-  @component()
+  @component
   readonly mqtt = new Mqtt(this);
 
-  @component('ws')
+  @component
   readonly outboundWebSocket = new OutboundWebSocket(this);
 
-  @component('input:0')
+  @component
   readonly input0 = new Input(this, 0);
 
-  @component('input:1')
+  @component
   readonly input1 = new Input(this, 1);
 
-  @component('input:2')
+  @component
   readonly input2 = new Input(this, 2);
 
-  @component('input:3')
+  @component
   readonly input3 = new Input(this, 3);
 
-  @component('switch:0')
+  @component
   readonly switch0 = new Switch(this, 0);
 
-  @component('switch:1')
+  @component
   readonly switch1 = new Switch(this, 1);
 
-  @component('switch:2')
+  @component
   readonly switch2 = new Switch(this, 2);
 
-  @component('switch:3')
+  @component
   readonly switch3 = new Switch(this, 3);
 
-  @component()
+  @component
   readonly script = new Script(this);
 
-  @component()
+  @component
   readonly ui = new Ui(this);
 }
 

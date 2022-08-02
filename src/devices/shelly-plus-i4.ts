@@ -13,34 +13,34 @@ export class ShellyPlusI4 extends Device {
   static readonly model = 'SNSN-0024X';
   static readonly modelName = 'Shelly Plus I4';
 
-  @component()
+  @component
   readonly wifi = new WiFi(this);
 
-  @component('ble')
+  @component
   readonly bluetoothLowEnergy = new BluetoothLowEnergy(this);
 
-  @component()
+  @component
   readonly cloud = new Cloud(this);
 
-  @component()
+  @component
   readonly mqtt = new Mqtt(this);
 
-  @component('ws')
+  @component
   readonly outboundWebSocket = new OutboundWebSocket(this);
 
-  @component('input:0')
+  @component
   readonly input0 = new Input(this, 0);
 
-  @component('input:1')
+  @component
   readonly input1 = new Input(this, 1);
 
-  @component('input:2')
+  @component
   readonly input2 = new Input(this, 2);
 
-  @component('input:3')
+  @component
   readonly input3 = new Input(this, 3);
 
-  @component()
+  @component
   readonly script = new Script(this);
 }
 
