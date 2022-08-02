@@ -20,13 +20,13 @@ export class Humidity extends ComponentWithId<HumidityAttributes, HumidityConfig
   /**
    * Relative humidity, in percent.
    */
-  @characteristic()
+  @characteristic
   readonly rh: number | null = null;
 
   /**
    * Any error conditions that have occurred.
    */
-  @characteristic()
+  @characteristic
   readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {

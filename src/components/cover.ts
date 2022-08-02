@@ -73,44 +73,44 @@ export class Cover extends ComponentWithId<CoverAttributes, CoverConfig> impleme
   /**
    * Source of the last command.
    */
-  @characteristic()
+  @characteristic
   readonly source: string = '';
 
   /**
    * The current state.
    */
-  @characteristic()
+  @characteristic
   readonly state: 'open' | 'closed' | 'opening' | 'closing' | 'stopped' | 'calibrating' = 'stopped';
 
   /**
    * The current (last measured) instantaneous power delivered to the attached
    * load.
    */
-  @characteristic()
+  @characteristic
   readonly apower: number = 0;
 
   /**
    * Last measured voltage (in Volts).
    */
-  @characteristic()
+  @characteristic
   readonly voltage: number = 0;
 
   /**
    * Last measured current (in Amperes).
    */
-  @characteristic()
+  @characteristic
   readonly current: number = 0;
 
   /**
    * Last measured power factor.
    */
-  @characteristic()
+  @characteristic
   readonly pf: number = 0;
 
   /**
    * Information about the energy counter.
    */
-  @characteristic()
+  @characteristic
   readonly aenergy: CoverEnergyCounterAttributes = {
       total: 0,
       by_minute: [],
@@ -120,44 +120,44 @@ export class Cover extends ComponentWithId<CoverAttributes, CoverConfig> impleme
   /**
    * The current position in percent, from `0` (fully closed) to `100` (fully open); or `null` if not calibrated.
    */
-  @characteristic()
+  @characteristic
   readonly current_pos: number | null = null;
 
   /**
    * The requested target position in percent, from `0` (fully closed) to `100` (fully open); or `null` if not calibrated
    * or not actively moving.
    */
-  @characteristic()
+  @characteristic
   readonly target_pos: number | null = null;
 
   /**
    * A timeout (in seconds) after which the cover will automatically stop moving; or `undefined` if not actively moving.
    */
-  @characteristic()
+  @characteristic
   readonly move_timeout: number | undefined;
 
   /**
    * The time at which the movement began; or `undefined` if not actively moving.
    */
-  @characteristic()
+  @characteristic
   readonly move_started_at: number | undefined;
 
   /**
    * Whether the cover has been calibrated.
    */
-  @characteristic()
+  @characteristic
   readonly pos_control: boolean = false;
 
   /**
    * Information about the temperature sensor (if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly temperature: CoverTemperatureAttributes | undefined;
 
   /**
    * Any error conditions that have occurred.
    */
-  @characteristic()
+  @characteristic
   readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {

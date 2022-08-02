@@ -27,7 +27,7 @@ export class DevicePower extends ComponentWithId<DevicePowerAttributes, DevicePo
   /**
    * Information about the battery charge.
    */
-  @characteristic()
+  @characteristic
   readonly battery: DevicePowerBatteryStatus = {
       V: null,
       percent: null,
@@ -36,13 +36,13 @@ export class DevicePower extends ComponentWithId<DevicePowerAttributes, DevicePo
   /**
    * Information about the external power source.
    */
-  @characteristic()
+  @characteristic
   readonly external: DevicePowerExternalSource | undefined;
 
   /**
    * Any error conditions that have occurred.
    */
-  @characteristic()
+  @characteristic
   readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {

@@ -67,31 +67,31 @@ export class WiFi extends Component<WiFiAttributes, WiFiConfig> implements WiFiA
   /**
    * IP address of the device.
    */
-  @characteristic()
+  @characteristic
   readonly sta_ip: string | null = null;
 
   /**
    * Status of the connection.
    */
-  @characteristic()
+  @characteristic
   readonly status: 'disconnected' | 'connecting' | 'connected' | 'got ip' = 'disconnected';
 
   /**
    * SSID of the network.
    */
-  @characteristic()
+  @characteristic
   readonly ssid: string | null = null;
 
   /**
    * Signal strength, in dBms.
    */
-  @characteristic()
+  @characteristic
   readonly rssi: number = 0;
 
   /**
    * Number of clients connected to the access point.
    */
-  @characteristic()
+  @characteristic
   readonly ap_client_count: number | undefined;
 
   constructor(device: Device) {

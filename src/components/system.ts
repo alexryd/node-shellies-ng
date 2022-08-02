@@ -80,91 +80,91 @@ export class System extends Component<SystemAttributes, SystemConfig> implements
   /**
    * MAC address of the device.
    */
-  @characteristic()
+  @characteristic
   readonly mac: string = '';
 
   /**
    * true if a restart is required, false otherwise.
    */
-  @characteristic()
+  @characteristic
   readonly restart_required: boolean = false;
 
   /**
    * Local time in the current timezone (HH:MM).
    */
-  @characteristic()
+  @characteristic
   readonly time: string = '';
 
   /**
    * Current time in UTC as a UNIX timestamp.
    */
-  @characteristic()
+  @characteristic
   readonly unixtime: number = 0;
 
   /**
    * Time in seconds since last reboot.
    */
-  @characteristic()
+  @characteristic
   readonly uptime: number = 0;
 
   /**
    * Total RAM, in bytes.
    */
-  @characteristic()
+  @characteristic
   readonly ram_size: number = 0;
 
   /**
    * Available RAM, in bytes.
    */
-  @characteristic()
+  @characteristic
   readonly ram_free: number = 0;
 
   /**
    * File system total size, in bytes.
    */
-  @characteristic()
+  @characteristic
   readonly fs_size: number = 0;
 
   /**
    * File system available size, in bytes.
    */
-  @characteristic()
+  @characteristic
   readonly fs_free: number = 0;
 
   /**
    * Configuration revision number.
    */
-  @characteristic()
+  @characteristic
   readonly cfg_rev: number = 0;
 
   /**
    * KVS (Key-Value Store) revision number.
    */
-  @characteristic()
+  @characteristic
   readonly kvs_rev: number = 0;
 
   /**
    * Schedule revision number (present if schedules are enabled).
    */
-  @characteristic()
+  @characteristic
   readonly schedule_rev: number | undefined;
 
   /**
    * Webhook revision number (present if schedules are enabled).
    */
-  @characteristic()
+  @characteristic
   readonly webhook_rev: number | undefined;
 
   /**
    * Available firmware updates, if any.
    */
-  @characteristic()
+  @characteristic
   readonly available_updates: SystemFirmwareUpdate = {};
 
   /**
    * Information about boot type and cause (only for battery-operated devices).
    */
-  @characteristic()
+  @characteristic
   readonly wakeup_reason: SystemWakeupReason | undefined;
 
   constructor(device: Device) {

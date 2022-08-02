@@ -17,7 +17,7 @@ export class Cloud extends Component<CloudAttributes, CloudConfig> implements Cl
   /**
    * Whether the device is connected to the Shelly cloud.
    */
-  @characteristic()
+  @characteristic
   readonly connected: boolean = false;
 
   constructor(device: Device) {

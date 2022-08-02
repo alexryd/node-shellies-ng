@@ -21,19 +21,19 @@ export class Temperature extends ComponentWithId<TemperatureAttributes, Temperat
   /**
    * Current temperature, in Celsius.
    */
-  @characteristic()
+  @characteristic
   readonly tC: number | null = null;
 
   /**
    * Current temperature, in Fahrenheit.
    */
-  @characteristic()
+  @characteristic
   readonly tF: number | null = null;
 
   /**
    * Any error conditions that have occurred.
    */
-  @characteristic()
+  @characteristic
   readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {

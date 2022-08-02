@@ -21,7 +21,7 @@ export class Ethernet extends Component<EthernetAttributes, EthernetConfig> impl
   /**
    * IP address of the device.
    */
-  @characteristic()
+  @characteristic
   readonly ip: string | null = null;
 
   constructor(device: Device) {

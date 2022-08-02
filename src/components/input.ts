@@ -22,7 +22,7 @@ export class Input extends ComponentWithId<InputAttributes, InputConfig> impleme
   /**
    * State of the input (null if stateless).
    */
-  @characteristic()
+  @characteristic
   readonly state: boolean | null = null;
 
   constructor(device: Device, id = 0) {

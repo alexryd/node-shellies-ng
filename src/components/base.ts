@@ -21,20 +21,22 @@ export interface ComponentLike {
 }
 
 /**
- * Prototype decorator used to label properties as characteristics.
+ * Property decorator used to label properties as characteristics.
+ * @param target - The prototype of the component class that the property belongs to.
+ * @param propertyName - The name of the property.
  */
-export const characteristic = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (target: any, propertyKey: string) => {
-    // get or create a set of characteristics
-    let characteristics: Set<string> = target['_characteristics'];
-    if (!characteristics) {
-      target['_characteristics'] = characteristics = new Set<string>();
-    }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const characteristic = (target: any, propertyName: string) => {
+  // make sure the given prototype has an array of properties
+  if (!Object.prototype.hasOwnProperty.call(target, '_characteristicProps')) {
+    target._characteristicProps = new Array<string>();
+  }
 
-    // add this characteristic to the set
-    characteristics.add(propertyKey);
-  };
+  // get the array of properties
+  const props: string[] = target._characteristicProps;
+
+  // add this property to the array
+  props.push(propertyName);
 };
 
 /**
@@ -58,11 +60,31 @@ export abstract class ComponentBase extends EventEmitter implements ComponentLik
     this.key = key !== null ? key : name.toLowerCase();
   }
 
+  private _characteristics: Set<string> | null = null;
+
   /**
    * A list of all characteristics.
    */
-  protected get characteristics(): Set<string> | undefined {
-    return this['_characteristics'];
+  protected get characteristics(): Set<string> {
+    if (this._characteristics === null) {
+      // construct an array of properties stored by the @characteristic property decorator
+      const props = new Array<string>();
+      let proto = Object.getPrototypeOf(this);
+
+      // traverse the prototype chain and collect all properties
+      while (proto !== null) {
+        if (Object.prototype.hasOwnProperty.call(proto, '_characteristicProps')) {
+          props.push(...proto._characteristicProps);
+        }
+
+        proto = Object.getPrototypeOf(proto);
+      }
+
+      // store the list
+      this._characteristics = new Set(props);
+    }
+
+    return this._characteristics;
   }
 
   /**

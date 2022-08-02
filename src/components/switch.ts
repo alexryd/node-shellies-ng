@@ -53,62 +53,62 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig> impl
   /**
    * Source of the last command.
    */
-  @characteristic()
+  @characteristic
   readonly source: string = '';
 
   /**
    * true if the output channel is currently on, false otherwise.
    */
-  @characteristic()
+  @characteristic
   readonly output: boolean = false;
 
   /**
    * Start time of the timer (as a UNIX timestamp, in UTC).
    */
-  @characteristic()
+  @characteristic
   readonly timer_started_at: number | undefined;
 
   /**
    * Duration of the timer, in seconds;
    */
-  @characteristic()
+  @characteristic
   readonly timer_duration: number | undefined;
 
   /**
    * The current (last measured) instantaneous power delivered to the attached
    * load (if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly apower: number | undefined;
 
   /**
    * Last measured voltage (in Volts, if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly voltage: number | undefined;
 
   /**
    * Last measured current (in Amperes, if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly current: number | undefined;
 
   /**
    * Last measured power factor (if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly pf: number | undefined;
 
   /**
    * Information about the energy counter (if applicable).
    */
-  @characteristic()
+  @characteristic
   readonly aenergy: SwitchEnergyCounterAttributes | undefined;
 
   /**
    * Information about the temperature.
    */
-  @characteristic()
+  @characteristic
   readonly temperature: SwitchTemperatureAttributes = {
       tC: null,
       tF: null,
@@ -117,7 +117,7 @@ export class Switch extends ComponentWithId<SwitchAttributes, SwitchConfig> impl
   /**
    * Any error conditions that have occurred.
    */
-  @characteristic()
+  @characteristic
   readonly errors: string[] | undefined;
 
   constructor(device: Device, id = 0) {

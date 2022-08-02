@@ -24,7 +24,7 @@ export class Mqtt extends Component<MqttAttributes, MqttConfig> implements MqttA
   /**
    * Whether the device is connected to an MQTT server.
    */
-  @characteristic()
+  @characteristic
   readonly connected: boolean = false;
 
   constructor(device: Device) {

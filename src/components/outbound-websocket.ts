@@ -19,7 +19,7 @@ export class OutboundWebSocket extends Component<
   /**
    * Whether an outbound WebSocket connection is established.
    */
-  @characteristic()
+  @characteristic
   readonly connected: boolean = false;
 
   constructor(device: Device) {
