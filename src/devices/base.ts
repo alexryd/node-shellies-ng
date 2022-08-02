@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 
-import { Component, ComponentLike, ComponentName, System } from '../components';
+import { Component, ComponentLike, System } from '../components';
 import {
   HttpService,
   KvsService,
@@ -242,9 +242,9 @@ export abstract class Device extends EventEmitter {
    * Returns a new Iterator object that contains each of the device's
    * components.
    */
-  *[Symbol.iterator](): IterableIterator<[ComponentName, ComponentLike]> {
-    for (const [name, key] of this.components.entries()) {
-      yield [name, this[key]];
+  *[Symbol.iterator](): IterableIterator<[string, ComponentLike]> {
+    for (const [key, prop] of this.components.entries()) {
+      yield [key, this[prop]];
     }
   }
 

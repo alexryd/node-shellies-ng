@@ -4,10 +4,6 @@ import EventEmitter from 'eventemitter3';
 import { Device } from '../devices';
 import { RpcEvent, RpcParams } from '../rpc';
 
-export type ComponentName = string;
-
-export type CharacteristicName = string;
-
 export type PrimitiveTypes = boolean | number | string;
 export type CharacteristicValue = PrimitiveTypes | PrimitiveTypes[] | null | { [key: string]: PrimitiveTypes | PrimitiveTypes[] | null };
 
@@ -17,6 +13,7 @@ export type CharacteristicValue = PrimitiveTypes | PrimitiveTypes[] | null | { [
  */
 export interface ComponentLike {
   name: string;
+  key: string;
   device: Device;
 
   update(data: Record<string, unknown>);
@@ -30,9 +27,9 @@ export const characteristic = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (target: any, propertyKey: string) => {
     // get or create a set of characteristics
-    let characteristics: Set<CharacteristicName> = target['_characteristics'];
+    let characteristics: Set<string> = target['_characteristics'];
     if (!characteristics) {
-      target['_characteristics'] = characteristics = new Set<CharacteristicName>();
+      target['_characteristics'] = characteristics = new Set<string>();
     }
 
     // add this characteristic to the set
@@ -45,17 +42,26 @@ export const characteristic = () => {
  */
 export abstract class ComponentBase extends EventEmitter implements ComponentLike {
   /**
+   * The key used to identify the component in status updates etc.
+   */
+  readonly key: string;
+
+  /**
    * @param name - The name of this component. Used when making RPCs.
    * @param device - The device that owns this component.
+   * @param key - The key used to identify the component in status updates etc. If `null`, the component name
+   * in lower case letters will be used.
    */
-  constructor(readonly name: string, readonly device: Device) {
+  constructor(readonly name: string, readonly device: Device, key: string | null = null) {
     super();
+
+    this.key = key !== null ? key : name.toLowerCase();
   }
 
   /**
    * A list of all characteristics.
    */
-  protected get characteristics(): Set<CharacteristicName> | undefined {
+  protected get characteristics(): Set<string> | undefined {
     return this['_characteristics'];
   }
 
@@ -67,7 +73,7 @@ export abstract class ComponentBase extends EventEmitter implements ComponentLik
    */
   update(data: Record<string | number | symbol, unknown>) {
     const cs = this.characteristics;
-    const changed = new Set<CharacteristicName>();
+    const changed = new Set<string>();
 
     if (!cs) {
       // abort if we don't have any characteristics
@@ -182,9 +188,15 @@ export abstract class ComponentWithId<Attributes, Config, ConfigResponse = Defau
    * @param name - The name of this component. Used when making RPCs.
    * @param device - The device that owns this component.
    * @param id - ID of this component.
+   * @param key - The key used to identify the component in status updates etc. If `null`, the component name
+   * in lower case letters will be used. The component ID will be appended to this key.
    */
-  constructor(name: string, device: Device, readonly id: number = 0) {
-    super(name, device);
+  constructor(name: string, device: Device, readonly id: number = 0, key: string | null = null) {
+    super(
+      name,
+      device,
+      (key !== null ? key : name.toLowerCase()) + ':' + id,
+    );
   }
 
   /**
