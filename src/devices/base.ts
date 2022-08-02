@@ -145,7 +145,7 @@ export abstract class Device extends EventEmitter {
   readonly shelly = new ShellyService(this);
 
   /**
-   * This device's Shedule service.
+   * This device's Schedule service.
    */
   readonly schedule = new ScheduleService(this);
 
