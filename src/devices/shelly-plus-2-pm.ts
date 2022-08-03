@@ -12,8 +12,8 @@ import {
 } from '../components';
 
 export class ShellyPlus2Pm extends MultiProfileDevice {
-  static readonly model = 'SNSW-002P16EU';
-  static readonly modelName = 'Shelly Plus 2 PM';
+  static readonly model: string = 'SNSW-002P16EU';
+  static readonly modelName: string = 'Shelly Plus 2 PM';
 
   @component
   readonly wifi = new WiFi(this);

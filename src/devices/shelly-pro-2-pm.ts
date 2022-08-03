@@ -12,8 +12,8 @@ import {
 } from '../components';
 
 export class ShellyPro2Pm extends MultiProfileDevice {
-  static readonly model = 'SPSW-002PE16EU';
-  static readonly modelName = 'Shelly Pro 2 PM';
+  static readonly model: string = 'SPSW-002PE16EU';
+  static readonly modelName: string = 'Shelly Pro 2 PM';
 
   @component
   readonly wifi = new WiFi(this);
@@ -50,3 +50,15 @@ export class ShellyPro2Pm extends MultiProfileDevice {
 }
 
 Device.registerClass(ShellyPro2Pm);
+
+export class ShellyPro2PmRev1 extends ShellyPro2Pm {
+  static readonly model: string = 'SPSW-102PE16EU';
+}
+
+Device.registerClass(ShellyPro2PmRev1);
+
+export class ShellyPro2PmRev2 extends ShellyPro2PmRev1 {
+  static readonly model: string = 'SPSW-202PE16EU';
+}
+
+Device.registerClass(ShellyPro2PmRev2);

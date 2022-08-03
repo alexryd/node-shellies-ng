@@ -13,8 +13,8 @@ import {
 } from '../components';
 
 export class ShellyPro4Pm extends Device {
-  static readonly model = 'SPSW-004PE16EU';
-  static readonly modelName = 'Shelly Pro 4 PM';
+  static readonly model: string = 'SPSW-004PE16EU';
+  static readonly modelName: string = 'Shelly Pro 4 PM';
 
   @component
   readonly wifi = new WiFi(this);

@@ -11,8 +11,8 @@ import {
 } from '../components';
 
 export class ShellyPro1Pm extends Device {
-  static readonly model = 'SPSW-001PE16EU';
-  static readonly modelName = 'Shelly Pro 1 PM';
+  static readonly model: string = 'SPSW-001PE16EU';
+  static readonly modelName: string = 'Shelly Pro 1 PM';
 
   @component
   readonly wifi = new WiFi(this);
@@ -43,3 +43,15 @@ export class ShellyPro1Pm extends Device {
 }
 
 Device.registerClass(ShellyPro1Pm);
+
+export class ShellyPro1PmRev1 extends ShellyPro1Pm {
+  static readonly model: string = 'SPSW-101PE16EU';
+}
+
+Device.registerClass(ShellyPro1PmRev1);
+
+export class ShellyPro1PmRev2 extends ShellyPro1PmRev1 {
+  static readonly model: string = 'SPSW-201PE16EU';
+}
+
+Device.registerClass(ShellyPro1PmRev2);
