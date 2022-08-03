@@ -40,13 +40,13 @@ interface TestAttributes {
 }
 
 class TestComponent extends Component<TestAttributes, null, null> {
-  @characteristic()
+  @characteristic
   readonly characteristic1: number = 0;
 
-  @characteristic()
+  @characteristic
   readonly characteristic2: boolean = false;
 
-  @characteristic()
+  @characteristic
   readonly characteristic3: CompoundCharacteristic = {
       characteristic1: null,
       characteristic2: 0,

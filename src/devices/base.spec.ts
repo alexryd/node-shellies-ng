@@ -1,4 +1,4 @@
-import { Component, ComponentName } from '../components';
+import { Component } from '../components';
 import { component, Device } from './base';
 import { RpcHandler } from '../rpc';
 
@@ -13,17 +13,17 @@ class TestRpcHandler extends RpcHandler {
 }
 
 class TestComponent extends Component<unknown, null, null> {
-  constructor(device: Device) {
-    super('Test', device);
+  constructor(device: Device, key: string | null = null) {
+    super('Test', device, key);
   }
 }
 
 class TestDevice extends Device {
-  @component()
-  readonly component1 = new TestComponent(this);
+  @component
+  readonly component1 = new TestComponent(this, 'component1');
 
-  @component('shelly')
-  readonly component2 = new TestComponent(this);
+  @component
+  readonly component2 = new TestComponent(this, 'shelly');
 
   constructor() {
     super(
@@ -35,7 +35,7 @@ class TestDevice extends Device {
     );
   }
 
-  getComponents(): Map<ComponentName, string> {
+  getComponents(): Map<string, string> {
     return this.components;
   }
 }
@@ -90,8 +90,8 @@ describe('Device', () => {
       }
 
       expect(callback).toHaveBeenCalledTimes(3);
-      expect(callback).toHaveBeenNthCalledWith(2, 'component1', device.component1);
-      expect(callback).toHaveBeenNthCalledWith(3, 'shelly', device.component2);
+      expect(callback).toHaveBeenNthCalledWith(1, 'component1', device.component1);
+      expect(callback).toHaveBeenNthCalledWith(2, 'shelly', device.component2);
     });
   });
 });
