@@ -4,6 +4,7 @@ export * from './cloud';
 export * from './cover';
 export * from './device-power';
 export * from './ethernet';
+export * from './ht-ui';
 export * from './humidity';
 export * from './input';
 export * from './light';
