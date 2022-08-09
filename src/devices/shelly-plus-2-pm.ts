@@ -50,3 +50,9 @@ export class ShellyPlus2Pm extends MultiProfileDevice {
 }
 
 Device.registerClass(ShellyPlus2Pm);
+
+export class ShellyPlus2PmRev1 extends ShellyPlus2Pm {
+  static readonly model: string = 'SNSW-102P16EU';
+}
+
+Device.registerClass(ShellyPlus2PmRev1);
