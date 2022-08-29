@@ -11,7 +11,7 @@ import {
   WiFi,
 } from '../components';
 
-export class ShellyPlusHT extends Device {
+export class ShellyPlusHt extends Device {
   static readonly model: string = 'SNSN-0013A';
   static readonly modelName: string = 'Shelly Plus H&T';
 
@@ -43,4 +43,4 @@ export class ShellyPlusHT extends Device {
   readonly htUi = new HtUi(this);
 }
 
-Device.registerClass(ShellyPlusHT);
+Device.registerClass(ShellyPlusHt);
