@@ -1,7 +1,8 @@
+import EventEmitter from 'eventemitter3';
 import mDNS from 'multicast-dns';
 import os from 'os';
 
-import { DeviceDiscoverer } from './base';
+import { DeviceDiscoverer, DeviceIdentifiers } from './base';
 import { DeviceId } from '../devices';
 
 /**
@@ -27,10 +28,21 @@ const DEFAULT_MDNS_OPTIONS: Readonly<MdnsOptions> = {
  */
 const SERVICE_NAME = '_shelly._tcp.local';
 
+type MdnsDeviceDiscovererEvents = {
+  /**
+   * The 'discover' event is emitted when a device is discovered.
+   */
+  discover: (identifiers: DeviceIdentifiers) => void;
+  /**
+   * The 'error' event is emitted if an asynchronous error occurs.
+   */
+  error: (error: Error) => void;
+};
+
 /**
  * A service that can discover Shelly devices using mDNS.
  */
-export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
+export class MdnsDeviceDiscoverer extends EventEmitter<MdnsDeviceDiscovererEvents> implements DeviceDiscoverer {
   /**
    * A reference to the multicast-dns library.
    */
@@ -194,7 +206,7 @@ export class MdnsDeviceDiscoverer extends DeviceDiscoverer {
     }
 
     if (ipAddress) {
-      this.handleDiscoveredDevice({
+      this.emit('discover', {
         deviceId,
         hostname: ipAddress,
       });
