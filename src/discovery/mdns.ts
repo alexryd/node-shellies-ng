@@ -208,6 +208,7 @@ export class MdnsDeviceDiscoverer extends EventEmitter<MdnsDeviceDiscovererEvent
     if (ipAddress) {
       this.emit('discover', {
         deviceId,
+        protocol: 'websocket',
         hostname: ipAddress,
       });
     }

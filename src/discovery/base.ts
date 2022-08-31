@@ -9,6 +9,10 @@ export interface DeviceIdentifiers {
    */
   deviceId: DeviceId;
   /**
+   * The recommended protocol to use when communicating with this device.
+   */
+  protocol: 'websocket' | 'outboundWebsocket';
+  /**
    * The IP address or hostname of the device, if available.
    */
   hostname?: string;
