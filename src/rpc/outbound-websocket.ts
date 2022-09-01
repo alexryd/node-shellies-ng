@@ -130,10 +130,18 @@ export class OutboundWebSocketServer extends EventEmitter<OutboundWebSocketServe
   }
 
   /**
-   * Stops the server from listening for incoming connections.
+   * Stops the server from accepting new connections.
    */
-  close() {
-    this.server.close();
+  close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.server.close((error?: Error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   /**
