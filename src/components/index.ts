@@ -16,3 +16,4 @@ export * from './system';
 export * from './temperature';
 export * from './ui';
 export * from './wifi';
+export * from './plugs-ui';

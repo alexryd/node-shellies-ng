@@ -12,3 +12,5 @@ export * from './shelly-pro-2';
 export * from './shelly-pro-2-pm';
 export * from './shelly-pro-3';
 export * from './shelly-pro-4-pm';
+export * from './shelly-pro-4-pm-v2';
+export * from './shelly-plus-plug-s';
