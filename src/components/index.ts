@@ -11,6 +11,7 @@ export * from './light';
 export * from './mqtt';
 export * from './outbound-websocket';
 export * from './script';
+export * from './smoke';
 export * from './switch';
 export * from './system';
 export * from './temperature';

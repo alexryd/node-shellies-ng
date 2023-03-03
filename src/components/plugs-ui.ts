@@ -36,7 +36,7 @@ export interface PlugsUiConfig {
 }
 
 export class PlugsUi extends Component<PlugsUiAttributes, PlugsUiConfig> implements PlugsUiAttributes {
-  constructor (device: Device) {
-    super('PLUGS_UI', device);
+  constructor (readonly name: string, device: Device) {
+    super(name, device);
   }
 }

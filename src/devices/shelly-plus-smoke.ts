@@ -2,17 +2,16 @@ import { component, Device } from './base';
 import {
   BluetoothLowEnergy,
   Cloud,
+  DevicePower,
   Mqtt,
   OutboundWebSocket,
-  Script,
-  Switch,
+  Smoke,
   WiFi,
-  PlugsUi,
 } from '../components';
 
-export class ShellyPlusPlugS extends Device {
-  static readonly model: string = 'SNPL-00112EU';
-  static readonly modelName: string = 'Shelly Plus Plug S';
+export class ShellyPlusSmoke extends Device {
+  static readonly model: string = 'SNSN-0031Z';
+  static readonly modelName: string = 'Shelly Plus Smoke';
 
   @component
   readonly wifi = new WiFi(this);
@@ -30,13 +29,10 @@ export class ShellyPlusPlugS extends Device {
   readonly outboundWebSocket = new OutboundWebSocket(this);
 
   @component
-  readonly switch0 = new Switch(this, 0);
+  readonly devicePower0 = new DevicePower(this, 0);
 
   @component
-  readonly script = new Script(this);
-
-  @component
-  readonly plugsUi = new PlugsUi('PLUGS_UI', this);
+  readonly smoke0 = new Smoke(this, 0);
 }
 
-Device.registerClass(ShellyPlusPlugS);
+Device.registerClass(ShellyPlusSmoke);

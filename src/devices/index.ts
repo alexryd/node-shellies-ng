@@ -13,4 +13,7 @@ export * from './shelly-pro-2-pm';
 export * from './shelly-pro-3';
 export * from './shelly-pro-4-pm';
 export * from './shelly-pro-4-pm-v2';
+export * from './shelly-plus-plug-it';
 export * from './shelly-plus-plug-s';
+export * from './shelly-plus-plug-uk';
+export * from './shelly-plus-smoke';
