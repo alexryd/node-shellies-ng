@@ -79,6 +79,8 @@ export class JSONRPCClientWithAuthentication<ClientParams = void> extends JSONRP
     const req: JSONRPCRequestWithAuth = { auth: this.auth, ...request };
 
     // send the request
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const response = await super.requestAdvanced(req, clientParams);
 
     // handle errors

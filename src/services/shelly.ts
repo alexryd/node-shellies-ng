@@ -21,6 +21,10 @@ import {
   MqttConfig,
   OutboundWebSocketAttributes,
   OutboundWebSocketConfig,
+  PlugsUiAttributes,
+  PlugsUiConfig,
+  SmokeAttributes,
+  SmokeConfig,
   SwitchAttributes,
   SwitchConfig,
   SystemAttributes,
@@ -48,6 +52,7 @@ export interface ShellyStatus {
   'input:1'?: InputAttributes;
   'input:2'?: InputAttributes;
   'input:3'?: InputAttributes;
+  'smoke:0'?: SmokeAttributes;
   'switch:0'?: SwitchAttributes;
   'switch:1'?: SwitchAttributes;
   'switch:2'?: SwitchAttributes;
@@ -57,6 +62,8 @@ export interface ShellyStatus {
   'humidity:0'?: HumidityAttributes;
   'temperature:0'?: TemperatureAttributes;
   ui?: UiAttributes;
+  plugs_ui?: PlugsUiAttributes;
+  pluguk_ui?: PlugsUiAttributes;
 }
 
 export interface ShellyConfig {
@@ -72,6 +79,7 @@ export interface ShellyConfig {
   'input:1'?: InputConfig;
   'input:2'?: InputConfig;
   'input:3'?: InputConfig;
+  'smoke:0'?: SmokeConfig;
   'switch:0'?: SwitchConfig;
   'switch:1'?: SwitchConfig;
   'switch:2'?: SwitchConfig;
@@ -81,6 +89,8 @@ export interface ShellyConfig {
   'humidity:0'?: HumidityConfig;
   'temperature:0'?: TemperatureConfig;
   ui?: UiConfig;
+  plugs_ui?: PlugsUiConfig;
+  pluguk_ui?: PlugsUiConfig;
 }
 
 export interface ShellyMethods {
