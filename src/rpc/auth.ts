@@ -88,10 +88,14 @@ export class JSONRPCClientWithAuthentication<ClientParams = void> extends JSONRP
         if (!this.password) {
           // abort authentication if we don't have a password
           return Promise.reject(new Error('Unauthorized'));
-        } else if (req.auth) {
-          // the request contained an authentication response but still fails with error 401, which means
-          // we have the wrong password
-          return Promise.reject(new Error('Invalid password'));
+        } else {
+          const errorJSON = JSON.parse(response.error.message);
+          // make sure auth has not expired, even though it shouldn't expire
+          if ((req.auth) && (errorJSON.nonce > 0) && (errorJSON.nonce === req.auth.nonce)) {
+            // the request contained an authentication response but still fails with error 401, which means
+            // we have the wrong password
+            return Promise.reject(new Error('Invalid password'));
+          }
         }
 
         try {
