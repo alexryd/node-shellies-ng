@@ -377,7 +377,7 @@ export class Shellies extends EventEmitter<ShelliesEvents> {
       const info = await rpcHandler.request<ShellyDeviceInfo>('Shelly.GetDeviceInfo');
 
       // make sure the returned device ID matches
-      if (info.id !== deviceId) {
+      if (info.id.toLowerCase() !== deviceId.toLowerCase()) {
         throw new Error(`Unexpected device ID (returned: ${info.id}, expected: ${deviceId})`);
       }
 
