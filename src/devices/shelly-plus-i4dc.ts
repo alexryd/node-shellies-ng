@@ -9,7 +9,7 @@ import {
   WiFi,
 } from '../components';
 
-export class ShellyPlusI4 extends Device {
+export class ShellyPlusI4DC extends Device {
   static readonly model: string = 'SNSN-0D24X';
   static readonly modelName: string = 'Shelly Plus I4DC';
 
