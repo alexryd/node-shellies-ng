@@ -199,7 +199,7 @@ export class MdnsDeviceDiscoverer extends EventEmitter<MdnsDeviceDiscovererEvent
     let ipAddress: string | null = null;
 
     // find the device IP address among the answers
-    for (const a of response.answers) {
+    for (const a of response.answers.concat(response.additionals)) {
       if (a.type === 'A') {
         ipAddress = a.data;
       }
